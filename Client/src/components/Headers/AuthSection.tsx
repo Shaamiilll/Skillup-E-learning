@@ -32,13 +32,13 @@ function AuthSection() {
         ) : (
           <>
             <Link to={"/login"}>
-              <div className="border px-5 py-3 bg-white text-black rounded-full hover:cursor-pointer hover:text-white hover:bg-[#0D0C22] backdrop-blur-sm">
+              <div className=" px-5 py-3 bg-white text-black rounded-full hover:cursor-pointer backdrop-blur-sm">
                 <h1>Log in</h1>
               </div>
             </Link>
 
             <Link to={"/signup"}>
-              <div className="border px-5 py-3 bg-[#0D0C22] text-white rounded-full hover:cursor-pointer hover:text-black hover:bg-white backdrop-blur-sm">
+              <div className=" px-5 py-3 bg-[#0D0C22] text-white rounded-full hover:cursor-pointer hover:text-white hover:bg-[#262443] backdrop-blur-sm">
                 <h1>Sign up</h1>
               </div>
             </Link>

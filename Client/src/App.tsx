@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 const LandingPage = lazy(() => import('./Pages/LandingPage'))
+const SignupPage = lazy(()=> import ('./Pages/SignupPage'))
 
 function App() {
   const token = localStorage.getItem("SkillUpToken");
@@ -28,7 +29,7 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Suspense fallback={<Spinner />}><LandingPage /></Suspense>} />
-              <Route path="/" element={<Suspense fallback={<Spinner />}><LandingPage /></Suspense>} />
+              <Route path="/signup" element={<Suspense fallback={<Spinner />}><SignupPage /></Suspense>} />
               <Route path="/" element={<Suspense fallback={<Spinner />}><LandingPage /></Suspense>} />
               <Route path="/" element={<Suspense fallback={<Spinner />}><LandingPage /></Suspense>} />
             </Routes>
