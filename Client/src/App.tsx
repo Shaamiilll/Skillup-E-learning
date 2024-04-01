@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, Suspense, lazy } from "react";
+import "./App.css";
+import Spinner from "./components/common/Spinner";
+import { Toaster } from "react-hot-toast";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { toast } from "react-hot-toast";
+
+const LandingPage = lazy(() => import('./Pages/LandingPage'))
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const token = localStorage.getItem("SkillUpToken");
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // await dispatc
+      } catch (error) {
+        console.error("Error fetching user data :", error);
+        toast.error("Error fetching user data");
+      }
+    };
+    if (token) {
+      fetchData();
+    }
+  }, [token]);
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      <>
+        <div className="min-h-screen">
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Suspense fallback={<Spinner />}><LandingPage /></Suspense>} />
+              <Route path="/" element={<Suspense fallback={<Spinner />}><LandingPage /></Suspense>} />
+              <Route path="/" element={<Suspense fallback={<Spinner />}><LandingPage /></Suspense>} />
+              <Route path="/" element={<Suspense fallback={<Spinner />}><LandingPage /></Suspense>} />
+            </Routes>
+          </BrowserRouter>
+        </div>
+        <Toaster position="top-center" toastOptions={{ duration: 2000 }} />
+      </>
+    ); 
 }
 
-export default App
+export default App;
