@@ -1,3 +1,4 @@
+// BasicHeader.jsx
 import React from "react";
 import { Link } from "react-router-dom";
 import AuthSection from "./AuthSection";
@@ -26,10 +27,10 @@ function BasicHeader() {
     },
   ];
 
-  const userDetails = null;
+
 
   return (
-    <div className="flex items-center justify-between p-4">
+    <div className="flex items-center justify-between ">
       <ul className="md:flex gap-8">
         {Menu.map((value, index) => (
           <li key={index}>
@@ -46,6 +47,8 @@ function BasicHeader() {
       <div className="flex justify-center">
         <img src="/logo.svg" alt="logo" />
       </div>
+
+      {/* Render AuthSection with userDetails prop */}
       <AuthSection/>
     </div>
   );
