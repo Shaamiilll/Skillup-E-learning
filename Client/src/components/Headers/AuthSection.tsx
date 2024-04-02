@@ -1,17 +1,32 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { selectUser } from "../../Redux/slice/authSlice";
+import { AppDispatch } from '../../Redux/store';
+import { getUser } from "../../Redux/actions/authAction";
 
 function AuthSection() {
-  // const userDetails = {
-  //   user: "Shamil",
-  //   avatar: "https://imgs.search.brave.com/k70MUyUbXHkPgrZRXYNsFnIl-ziV4O4tOBhUQ8X4o1A/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzL2FlL2Vj/L2MyL2FlZWNjMjJh/NjdkYWM3OTg3YTgw/YWMwNzI0NjU4NDkz/LmpwZw",
-  // };
-  const userDetails = null
+  const token = localStorage.getItem('skillUpToken');
+  const dispatch: AppDispatch = useDispatch();
+
+  useEffect(() => {
+    if (token) {
+      dispatch(getUser());
+    }
+  }, [dispatch, token]);
+
+  const userDetails = useSelector(selectUser);
 
   return (
     <div>
       <div className="flex gap-3">
-        {userDetails ? (
+        {userDetails.loading ? (
+          <div className="flex space-x-2 animate-pulse">
+            <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+          </div>
+        ) : userDetails.user ? (
           <>
             <div className="border px-5 py-3 rounded-full hover:cursor-pointer hover:text-white hover:bg-[#0D0C22] backdrop-blur-sm">
               <Link
@@ -21,11 +36,11 @@ function AuthSection() {
                 <h1>Share work</h1>
               </Link>
             </div>
-            <div>
+            <div className="cursor-pointer">
               <img
-                src={userDetails.avatar}
+                src={userDetails.user?.avatar}
                 alt=""
-                className="rounded-full h-8"
+                className="rounded-full h-11 mt-1"
               />
             </div>
           </>

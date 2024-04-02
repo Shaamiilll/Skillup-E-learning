@@ -72,6 +72,28 @@ class UserRepository {
       };
     }
   }
+
+  async findUser(id:string){
+    try {
+      const userDetails = await Users.findById(id, { password: 0 });
+      if (!userDetails) {
+        return {
+          success: false,
+          message: `User not found`,
+        };
+      }
+      return {
+        success: true,
+        message: "user details fetched",
+        data: userDetails,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: `Failed to fetch ${error}`,
+      };
+    }
+  }
 }
 
 export default UserRepository;
