@@ -69,7 +69,8 @@ class userUsecase {
         };
       }
       const token = jwt.sign(result.data, "itssecret");
-
+      console.log(token);
+      
       return {
         status: result.success ? HttpStatus.Success : HttpStatus.ServerError,
         data: {

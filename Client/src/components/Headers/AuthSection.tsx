@@ -1,21 +1,23 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { selectUser } from "../../Redux/slice/authSlice";
-import { AppDispatch } from '../../Redux/store';
+import { Link } from "react-router-dom";
+import { AppDispatch } from "../../Redux/store";
 import { getUser } from "../../Redux/actions/authAction";
+import ProfileMenu from "./ProfileMenu"; // Import the ProfileMenu component
 
 function AuthSection() {
-  const token = localStorage.getItem('skillUpToken');
+  const token = localStorage.getItem("skillUpToken");
   const dispatch: AppDispatch = useDispatch();
+  
+  const userDetails = useSelector(selectUser);
 
   useEffect(() => {
     if (token) {
       dispatch(getUser());
     }
-  }, [dispatch, token]);
+  }, [userDetails, token]);
 
-  const userDetails = useSelector(selectUser);
 
   return (
     <div>
@@ -37,11 +39,7 @@ function AuthSection() {
               </Link>
             </div>
             <div className="cursor-pointer">
-              <img
-                src={userDetails.user?.avatar}
-                alt=""
-                className="rounded-full h-11 mt-1"
-              />
+              <ProfileMenu/>
             </div>
           </>
         ) : (
