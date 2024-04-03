@@ -5,7 +5,7 @@ import Footer from "../components/Footer/Footer.tsx";
 
 function signupPage() {
   return (
-    <div>
+    <div className="pl-20 pt-10 pr-20">
       <div className="h-full">
         <BasicHeader />
         <SignupSection />

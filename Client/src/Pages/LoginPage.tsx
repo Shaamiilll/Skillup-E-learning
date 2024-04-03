@@ -6,8 +6,8 @@ import LoginSection from '../components/Auth/LoginSection'
 function LoginPage() {
   return (
     
-    <div>
-      <div className="h-full">
+    <div className='pl-20 pt-10 pr-20'>
+      <div className="h-full ">
         <BasicHeader />
         <LoginSection />
       </div>

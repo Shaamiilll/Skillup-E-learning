@@ -5,7 +5,7 @@ import Footer from "../components/Footer/Footer";
 
 function LandingPage() {
   return (
-    <div>
+    <div className="pl-20 pt-10 pr-20">
       <div>
         <BasicHeader />
       </div>
