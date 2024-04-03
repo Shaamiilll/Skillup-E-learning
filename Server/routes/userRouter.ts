@@ -13,6 +13,11 @@ Router.post('/register', (req: Request, res: Response, next: NextFunction) => {
     userController.createUser(req, res);
 });
 
+
+Router.post('/login', (req: Request, res: Response, next: NextFunction) => {
+    userController.loginUser(req, res);
+});
+
 Router.get('/find', (req: Request, res: Response, next: NextFunction)=>{
     userController.findUser(req,res)
 })

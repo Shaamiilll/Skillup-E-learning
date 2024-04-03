@@ -47,8 +47,6 @@ function BasicHeader() {
       <div className="flex justify-center">
         <img src="/logo.svg" alt="logo" />
       </div>
-
-      {/* Render AuthSection with userDetails prop */}
       <AuthSection/>
     </div>
   );

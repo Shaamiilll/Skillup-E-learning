@@ -16,7 +16,7 @@ function AuthSection() {
     if (token) {
       dispatch(getUser());
     }
-  }, [userDetails, token]);
+  }, [dispatch, token]);
 
 
   return (
