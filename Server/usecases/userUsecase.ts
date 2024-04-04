@@ -249,7 +249,7 @@ class userUsecase {
       const mailOptions={
         from:process.env.VERIFY_APP_EMAIL,
         to:email,
-        subject: "Verify Your Email in SkillStream",
+        subject: "Verify Your Email in SkillUp",
         html: `<p>Hey ${email} Here is your Verification OTP: <br> Your OTP is <b>${otp}</b> </p><br>
               <i>Otp will Expire in 30 seconds</i>`,
       };
@@ -274,6 +274,27 @@ class userUsecase {
           success: true,
           message: "OTP generated and send",
           otp: otp,
+        },
+      };
+    } catch (error) {
+      return {
+        status: HttpStatus.ServerError,
+        data: {
+          success: false,
+          message: "server error",
+        },
+      };
+    }
+  }
+  async verifyOTP(body:any){
+    try {
+      const {email , otp} = body
+      const isValid = await this.otpRepository.checkOtp({email , otp})
+      return {
+        status: isValid.success ? HttpStatus.Success : HttpStatus.ServerError,
+        data: {
+          success: isValid.success,
+          message: isValid.message,
         },
       };
     } catch (error) {

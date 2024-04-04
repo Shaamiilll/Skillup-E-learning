@@ -37,6 +37,26 @@ class OtpRepository {
           };
     }
   }
+  async checkOtp(details:IOTP){
+    try {
+        const isAvail=await OTP.findOne(details)
+        if(!isAvail){
+            return{
+                success:false,
+                message:"OTP doesnt match"
+            }
+        }
+        return{
+            success:true,
+            message:"OTP matched"
+        }
+    } catch (error:any) {
+        return{
+            success:false,
+            message: error.message
+        }
+    }
+  }
 }
 
 export default OtpRepository

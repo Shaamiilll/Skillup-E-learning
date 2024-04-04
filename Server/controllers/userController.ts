@@ -35,6 +35,7 @@ class UserController {
     async sendOTP(req:Request , res:Response){
       try {
         const response = await this.userUsecase.sendOTP(req.body)
+        res.status(response.status).send(response.data)
       } catch (error) {
         res.status(500).send({
           success: false,
@@ -46,6 +47,18 @@ class UserController {
     async findUser(req:Request , res : Response){
       try {
         const response = await this.userUsecase.findUser(req.headers)
+        res.status(response.status).send(response.data)
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: "Internal Server error",
+        });
+      }
+    }
+
+    async verifyOTP(req:Request , res:Response){
+      try {
+        const response = await this.userUsecase.verifyOTP(req.body)
         res.status(response.status).send(response.data)
       } catch (error) {
         res.status(500).send({

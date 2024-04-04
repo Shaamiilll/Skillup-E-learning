@@ -20,6 +20,11 @@ Router.post('/otp', (req: Request, res: Response, next: NextFunction) => {
     userController.sendOTP(req, res);
 });
 
+Router.post('/otp/verify', (req: Request, res: Response, next: NextFunction) => {
+    userController.verifyOTP(req, res);
+});
+
+
 Router.post('/login', (req: Request, res: Response, next: NextFunction) => {
     userController.loginUser(req, res);
 });
