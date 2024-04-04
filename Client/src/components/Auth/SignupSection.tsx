@@ -31,14 +31,18 @@ function SignupSection() {
             username
         });
         if (data.success == true) {
-
+          console.log(data.token);
+          
           localStorage.setItem("skillUpToken", data.token)
-          setShowModal(true);
+          
           const response = await api.post('/user/otp',{
             email:email,
             isRegistration: true,
           })
-          console.log(response);
+          
+          if(response){
+            setShowModal(true);
+          }
           
         } else {
             toast.error(data.message);
@@ -119,7 +123,7 @@ const closeModalAndNavigate = () => {
           Submit <span className="px-1"></span>
         </button >
       </form>
-      <Modal isVisible={showModal}  onClose={closeModalAndNavigate}/>
+      <Modal isVisible={showModal}  onClose={closeModalAndNavigate} email={email}/>
     </>
   );
 }
