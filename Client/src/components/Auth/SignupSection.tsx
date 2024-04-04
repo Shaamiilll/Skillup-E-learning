@@ -1,16 +1,24 @@
-import axios from "axios";
-import React, { useReducer, useState } from "react";
+
+import React, {  useState } from "react";
 import api from "../../axios/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import Modal from "../common/Modal";
+
+
+
 
 function SignupSection() {
+
   const naviagte = useNavigate()
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [username, setUsername] = useState("");
+
+
+  const [showModal , setShowModal] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,10 +30,10 @@ function SignupSection() {
             confirmPassword,
             username
         });
-        if (data.success === true) {
-            toast.success('Login Succesfull. Welcome!');
-            localStorage.setItem("skillUpToken", data.token)
-            naviagte('/')
+        if (data.success == true) {
+
+          localStorage.setItem("skillUpToken", data.token)
+          setShowModal(true);
         } else {
             toast.error(data.message);
         }
@@ -42,9 +50,16 @@ function SignupSection() {
         }
     }
 };
+const closeModalAndNavigate = () => {
+  setShowModal(false);
+  toast.success("User registered succesfully")
+  naviagte("/"); // Navigate to the homepage
+};
 
   return (
     <>
+   
+
       <form onSubmit={handleSubmit} className="grid lg:grid-cols-3 w-4/6 gap-4">
         <div className="input-type">
           <input
@@ -92,12 +107,13 @@ function SignupSection() {
           />
         </div>
         <button
-          type="submit"
+          type="submit" 
           className="flex justify-center text-md w-40 bg-green-500 text-white px-3 py-3 border rounded-xl hover:bg-gray-50 hover:border-green-500 hover:text-green-500"
         >
           Submit <span className="px-1"></span>
-        </button>
+        </button >
       </form>
+      <Modal isVisible={showModal}  onClose={closeModalAndNavigate}/>
     </>
   );
 }

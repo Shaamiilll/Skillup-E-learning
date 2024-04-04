@@ -1,4 +1,4 @@
-import React from "react";
+
 import BasicHeader from "../components/Headers/BasicHeader";
 import SignupSection from "../components/Auth/SignupSection";
 import Footer from "../components/Footer/Footer.tsx";
