@@ -34,6 +34,12 @@ function SignupSection() {
 
           localStorage.setItem("skillUpToken", data.token)
           setShowModal(true);
+          const response = await api.post('/user/otp',{
+            email:email,
+            isRegistration: true,
+          })
+          console.log(response);
+          
         } else {
             toast.error(data.message);
         }
