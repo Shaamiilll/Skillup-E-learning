@@ -7,15 +7,23 @@ import bcrypt from "bcrypt";
 import MyJWTPayLoad from "../interfaces/jwt";
 import { IncomingHttpHeaders } from "http";
 import { UserRole } from "../enums/userRoleEnum";
+import OtpRepository from "../repositories/otpRepository"; 
+import nodemailer from "nodemailer"
+dotenv.config()
 
 class userUsecase {
   private userRepository: UserRepository;
+  private otpRepository: OtpRepository; // Correct capitalization
+
   private decodeToken(token: string): MyJWTPayLoad {
     return jwt.verify(token, "itssecret") as MyJWTPayLoad;
   }
-  constructor(userRepository: UserRepository) {
+
+  constructor(userRepository: UserRepository, otpRepository:OtpRepository  ) {
     this.userRepository = userRepository;
+    this.otpRepository = otpRepository;
   }
+
 
   async createUser(body: any) {
     try {
@@ -70,7 +78,7 @@ class userUsecase {
         };
       }
       const token = jwt.sign(result.data, "itssecret");
-      
+
       return {
         status: result.success ? HttpStatus.Success : HttpStatus.ServerError,
         data: {
@@ -92,41 +100,40 @@ class userUsecase {
 
   async findUser(header: IncomingHttpHeaders) {
     try {
-        const token = header['authorization']
-        
-        if(!token){
-            return {
-                status: HttpStatus.ServerError,
-                data: {
-                  success: false,
-                  message: "server error",
-                },
-              };
-        }
-       
-        const decode = this.decodeToken(token)
-      
-        
-        const response = await this.userRepository.findUser(decode.id)
-      
-        if(!response.data){
-            return{
-                status:response.success?HttpStatus.Success:HttpStatus.ServerError,
-                data:{
-                    success: response.success,
-                    message: response.message,
-                }
-            }
-        }
-        return{
-            status:response.success?HttpStatus.Success:HttpStatus.ServerError,
-            data:{
-                success:response.success,
-                message:response.message,
-                user:response.data
-            }
-        }
+      const token = header["authorization"];
 
+      if (!token) {
+        return {
+          status: HttpStatus.ServerError,
+          data: {
+            success: false,
+            message: "server error",
+          },
+        };
+      }
+
+      const decode = this.decodeToken(token);
+      const response = await this.userRepository.findUser(decode.id);
+
+      if (!response.data) {
+        return {
+          status: response.success
+            ? HttpStatus.Success
+            : HttpStatus.ServerError,
+          data: {
+            success: response.success,
+            message: response.message,
+          },
+        };
+      }
+      return {
+        status: response.success ? HttpStatus.Success : HttpStatus.ServerError,
+        data: {
+          success: response.success,
+          message: response.message,
+          user: response.data,
+        },
+      };
     } catch (error) {
       return {
         status: HttpStatus.ServerError,
@@ -138,12 +145,11 @@ class userUsecase {
     }
   }
 
-  async loginUser(body:any){
+  async loginUser(body: any) {
     try {
-      const {email , password } = body
+      const { email, password } = body;
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const passwordRegex =
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
       if (!emailRegex.test(email) || !passwordRegex.test(password)) {
         return {
@@ -165,7 +171,6 @@ class userUsecase {
         };
       }
 
-      
       if (response.data.isBlock) {
         return {
           status: HttpStatus.NotFound,
@@ -175,27 +180,100 @@ class userUsecase {
           },
         };
       }
-      const comparedPassword = await bcrypt.compare(password , response.data.password)
-      if(!comparedPassword){
-        return{
-          status:HttpStatus.NotFound,
-          data:{
-            success:false,
-            message:"Password is not match"
-          }
-        }
+      const comparedPassword = await bcrypt.compare(
+        password,
+        response.data.password
+      );
+      if (!comparedPassword) {
+        return {
+          status: HttpStatus.NotFound,
+          data: {
+            success: false,
+            message: "Password is not match",
+          },
+        };
       }
 
-      const token = jwt.sign({id:response.data.id , email:response.data.email , role:response.data.role } , "itssecret")
+      const token = jwt.sign(
+        {
+          id: response.data.id,
+          email: response.data.email,
+          role: response.data.role,
+        },
+        "itssecret"
+      );
       return {
-        status: response.success
-          ? HttpStatus.Success
-          : HttpStatus.ServerError,
+        status: response.success ? HttpStatus.Success : HttpStatus.ServerError,
         data: {
           success: response.success,
           message: "User Authenticated",
           token: token,
           admin: response.data.role == UserRole.Admin,
+        },
+      };
+    } catch (error) {
+      return {
+        status: HttpStatus.ServerError,
+        data: {
+          success: false,
+          message: "server error",
+        },
+      };
+    }
+  }
+
+  async sendOTP(body: any) {
+    try {
+      const {email} = body
+      const otp: string = `${Math.floor(1000 + Math.random() * 9000)}`;
+      await this.otpRepository.deleteOtp(email);
+      const response = await this.otpRepository.storeOtp({email, otp})
+      if(!response.success){
+        return {
+          status: HttpStatus.ServerError,
+          data: {
+            success: false,
+            message: response.message,
+          },
+        };
+      }
+
+      let transporter = nodemailer.createTransport({
+        service:"gmail",
+        auth:{
+          user:process.env.VERIFY_APP_EMAIL,
+          pass:process.env.VERIFY_APP_PASSWORD
+        }
+      })
+
+      const mailOptions={
+        from:process.env.VERIFY_APP_EMAIL,
+        to:email,
+        subject: "Verify Your Email in SkillStream",
+        html: `<p>Hey ${email} Here is your Verification OTP: <br> Your OTP is <b>${otp}</b> </p><br>
+              <i>Otp will Expire in 30 seconds</i>`,
+      };
+      transporter.sendMail(mailOptions , (err)=>{
+        if(err){
+          console.log("Error occurred");
+          console.log(err);
+          return {
+            status: HttpStatus.ServerError,
+            data: {
+              success: false,
+              message: "server error",
+            },
+          };
+        }else{
+          console.log("Code is sent");
+        }
+      })
+      return {
+        status: HttpStatus.Success,
+        data: {
+          success: true,
+          message: "OTP generated and send",
+          otp: otp,
         },
       };
     } catch (error) {
