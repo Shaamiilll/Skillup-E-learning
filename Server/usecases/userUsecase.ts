@@ -70,7 +70,6 @@ class userUsecase {
         };
       }
       const token = jwt.sign(result.data, "itssecret");
-      console.log(token);
       
       return {
         status: result.success ? HttpStatus.Success : HttpStatus.ServerError,
@@ -94,7 +93,7 @@ class userUsecase {
   async findUser(header: IncomingHttpHeaders) {
     try {
         const token = header['authorization']
-        console.log(token);
+        
         if(!token){
             return {
                 status: HttpStatus.ServerError,
@@ -106,11 +105,10 @@ class userUsecase {
         }
        
         const decode = this.decodeToken(token)
-        console.log(decode);
+      
         
         const response = await this.userRepository.findUser(decode.id)
-        console.log(response);
-        
+      
         if(!response.data){
             return{
                 status:response.success?HttpStatus.Success:HttpStatus.ServerError,
