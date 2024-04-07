@@ -1,75 +1,81 @@
-
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import api from "../../axios/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import Modal from "../common/Modal";
 
-
-
-
 function SignupSection() {
-
-  const naviagte = useNavigate()
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [otp, setOtp] = useState("");
 
-
-  const [showModal , setShowModal] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault();
     try {
-        const { data } = await api.post("/user/register", {
-            name,
-            email,
-            password,
-            confirmPassword,
-            username
+      const { data } = await api.post("/user/register", {
+        name,
+        email,
+        password,
+        confirmPassword,
+        username,
+      });
+      if (data.success) {
+        localStorage.setItem("skillUpToken", data.token);
+        const response = await api.post("/user/otp", {
+          email,
+          isRegistration: true,
         });
-        if (data.success == true) {
-          console.log(data.token);
-          
-          localStorage.setItem("skillUpToken", data.token)
-          
-          const response = await api.post('/user/otp',{
-            email:email,
-            isRegistration: true,
-          })
-          
-          if(response){
-            setShowModal(true);
-          }
-          
-        } else {
-            toast.error(data.message);
+        if (response) {
+          setShowModal(true);
         }
+      } else {
+        toast.error(data.message);
+      }
     } catch (error:any) {
-        // Handle Axios errors
-        console.error("AxiosError:", error);
-        if (error.response) {
-            // If the error has a response from the server
-            const errorMessage = error.response.data.message || "An error occurred while processing the request";
-            toast.error(errorMessage);
-        } else {
-            // If the error does not have a response (e.g., network error)
-            toast.error("An error occurred while processing the request");
-        }
+      console.error("AxiosError:", error);
+      const errorMessage =
+        error.response?.data.message || "An error occurred while processing the request";
+      toast.error(errorMessage);
     }
-};
-const closeModalAndNavigate = () => {
-  setShowModal(false);
-  toast.success("User registered succesfully")
-  naviagte("/"); // Navigate to the homepage
-};
+  };
 
+  const handleOTPSubmit = async (e:any) => {
+    e.preventDefault();
+    try {
+      const { data } = await api.post("/user/otp/verify", {
+        email,
+        otp,
+      });
+      if (data.success) {
+        toast.success("Welcome to SkillUp");
+        navigate("/");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error:any) {
+      console.error("AxiosError:", error);
+      const errorMessage =
+        error.response?.data.message || "An error occurred while processing the request";
+      toast.error(errorMessage);
+    }
+  };
+
+  const closeModalAndNavigate = () => {
+    setShowModal(false);
+    toast.success("User registered successfully");
+    navigate("/");
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
   return (
     <>
-   
-
       <form onSubmit={handleSubmit} className="grid lg:grid-cols-3 w-4/6 gap-4">
         <div className="input-type">
           <input
@@ -123,7 +129,32 @@ const closeModalAndNavigate = () => {
           Submit <span className="px-1"></span>
         </button >
       </form>
-      <Modal isVisible={showModal}  onClose={closeModalAndNavigate} email={email}/>
+
+      <Modal isVisible={showModal} onClose={closeModalAndNavigate}>
+        <div className="flex justify-between items-center mb-4">
+          <h3>Enter OTP</h3>
+          <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-800">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+        <form onSubmit={handleOTPSubmit}>
+          {/* OTP input field */}
+          <button type="submit" className="btn-primary">Submit</button>
+        </form>
+      </Modal>
     </>
   );
 }
