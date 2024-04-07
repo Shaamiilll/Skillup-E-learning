@@ -6,20 +6,15 @@ import Users from "../models/userModel";
 class UserRepository {
   async getUsers(role: string, regex: string) {
     try {
-      const users = regex
-        ? await Users.find(
-            { role: role, email: { $regex: regex } },
-            { password: 0 }
-          )
-        : await Users.find({ role: role }, { password: 0 });
+      const users = regex   ? await Users.find(  { role: role, email: { $regex: regex } },  { password: 0 }  )  : await Users.find({ role: role }, { password: 0 });
       return {
-        succes: true,
+        success: true,
         message: "All users fetched",
         data: users,
       };
     } catch (error) {
       return {
-        succes: false,
+        success: false,
         message: `Failed to fetach ${error}`,
       };
     }

@@ -24,6 +24,28 @@ class userUsecase {
     this.otpRepository = otpRepository;
   }
 
+  async getUsers(query:any){
+    try {
+      const { role, search } = query;
+      const response = await this.userRepository.getUsers(role, search);
+      return {
+        status: response.success ? HttpStatus.Success : HttpStatus.ServerError,
+        data: {
+          success: response.success,
+          message: response.message,
+          users: response?.data,
+        },
+      };
+    } catch (error) {
+      return {
+        status: HttpStatus.ServerError,
+        data: {
+          success: false,
+          message: "server error",
+        },
+      };
+    }
+  }
 
   async createUser(body: any) {
     try {
