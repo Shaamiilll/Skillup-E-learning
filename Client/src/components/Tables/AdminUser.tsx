@@ -42,12 +42,13 @@ interface UserType {
 }
 
 export default function AdminUser() {
-  const token = localStorage.getItem("skillUpToken");
+  const token = localStorage.getItem("skillUpToken")
   const dispatch: AppDispatch = useDispatch();
   const data = useSelector(selectStudents);
   const [search, setSearch] = useState("");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [userIdToBlock, setUserIdToBlock] = useState("");
+  const [userStatus , setUserStatus] = useState(Boolean)
 
   useEffect(() => {
     try {
@@ -59,31 +60,37 @@ export default function AdminUser() {
         toast("An unexpected error occurred");
       }
     }
-  }, [dispatch, token]);
+  }, [dispatch, token ]);
 
   const handleBlock = async (userId: string, isBlock: boolean) => {
     setUserIdToBlock(userId);
+    setUserStatus(isBlock)
     setShowConfirmationModal(true);
   };
 
   const handleConfirmation = async (confirm: boolean) => {
     if (confirm) {
-      await api.patch(`/user/status?_id=${id}&isBlock=${!isBlock}`,{},{
-        headers: {
-          Authorization: token,
-        },
-      })
       try {
-        // Your logic for blocking or unblocking the user
+        // Perform the block/unblock action
+        await api.patch(`/user/status?_id=${userIdToBlock}&isBlock=${!userStatus}`,{},{
+          headers: {
+            Authorization: token,
+          },
+        });
+        // Show success message
+        toast.success("Changed user's status");
+        // Reload the data
+        dispatch(getStudents(""));
       } catch (error: any) {
         console.error("Error:", error);
         toast.error("An error occurred while processing the request");
       }
     }
+    
     // Close the confirmation modal
     setShowConfirmationModal(false);
   };
-
+  
   return (
     <>
       <div className='input-type p-6'>
@@ -121,9 +128,9 @@ export default function AdminUser() {
               </td>
               <td className='px-16 py-2 flex justify-around gap-4'>
                 {user.isBlock ? (
-                  <button onClick={() => handleBlock(user._id, false)}>Unblock</button>
+                  <button onClick={() => handleBlock(user._id, true)}>Unblock</button>
                 ) : (
-                  <button onClick={() => handleBlock(user._id, true)}>Block</button>
+                  <button onClick={() => handleBlock(user._id, false)}>Block</button>
                 )}
               </td>
             </tr>

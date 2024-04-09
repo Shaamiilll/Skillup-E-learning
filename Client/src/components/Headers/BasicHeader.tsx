@@ -23,7 +23,7 @@ function BasicHeader() {
     {
       id: 4,
       name: "Teach on SkillUp",
-      path: "/addcourse",
+      path: "/instructor",
     },
   ];
 
