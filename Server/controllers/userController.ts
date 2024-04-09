@@ -12,7 +12,6 @@ class UserController {
     try {
 
       const response = await this.userUsecase.getUsers(req.query);
-      console.log(response.data);
       
       res.status(response?.status).send(response?.data);
     } catch (error) {
@@ -79,6 +78,30 @@ class UserController {
       res.status(500).send({
         success: false,
         message: "Internal Server error",
+      });
+    }
+  }
+
+  async updateStatus(req: Request, res: Response) {
+    try {
+      const response = await this.userUsecase.updateUser(req.query);
+      res.status(response.status).send(response.data);
+    } catch (error) {
+      res.status(500).send({
+        success: false,
+        message: "server error",
+      });
+    }
+  }
+
+  async updateRole(req:Request , res:Response){
+    try {
+      const response = await this.userUsecase.updateRole(req.body);
+      res.status(response.status).send(response.data);
+    } catch (error) {
+      res.status(500).send({
+        success: false,
+        message: "server error",
       });
     }
   }

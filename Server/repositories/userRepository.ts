@@ -89,6 +89,51 @@ class UserRepository {
       };
     }
   }
+
+  async updateUser(id: string, updates: any) {
+    try {
+      const userDetails = await Users.findByIdAndUpdate(id, updates, {
+        new: true,
+      });
+      console.log(userDetails);
+      
+      if (!userDetails) {
+        return {
+          success: false,
+          message: "No user found",
+        };
+      }
+      return {
+        success: true,
+        message: "user details updated",
+        data: userDetails,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: `Failed to update ${error}`,
+      };
+    }
+  }
+  async updateRole(id: string, updates: any) {
+    try {
+      const userDetails = await Users.findByIdAndUpdate(
+        id,
+        { verification: updates, role: "instructor" },
+        { new: true }
+      );
+      return {
+        success: true,
+        message: "user details updated",
+        data: userDetails,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: `Failed to update ${error}`,
+      };
+    }
+  }
 }
 
 export default UserRepository;

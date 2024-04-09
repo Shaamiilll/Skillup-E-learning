@@ -39,4 +39,20 @@ Router.post('/login', (req: Request, res: Response, next: NextFunction) => {
 Router.get('/find', (req: Request, res: Response, next: NextFunction)=>{
     userController.findUser(req,res)
 })
+
+Router.patch(
+    "/status",
+    (req: Request, res: Response, next: NextFunction) =>
+      authMiddleware.authUser(req, res, next),
+    (req: Request, res: Response, next: NextFunction) =>
+      authMiddleware.adminCheck(req, res, next),
+    (req: Request, res: Response) => userController.updateStatus(req, res)
+);
+
+Router.post(
+    "/authorize",
+    (req: Request, res: Response, next: NextFunction) =>
+      authMiddleware.authUser(req, res, next),
+    (req: Request, res: Response) => userController.updateRole(req, res)
+);
 export default Router;
