@@ -62,6 +62,25 @@ class userUsecase {
           },
         };
       }
+      if(!password){
+        return {
+          status: HttpStatus.ServerError,
+          data: {
+            success: false,
+            message: "Enter Your passowrd",
+          },
+        };
+      }
+
+      if(!confirmPassword){
+        return {
+          status: HttpStatus.ServerError,
+          data: {
+            success: false,
+            message: "Enter Your passowrd",
+          },
+        };
+      }
 
       if (password != confirmPassword) {
         return {
@@ -110,6 +129,7 @@ class userUsecase {
         },
       };
     } catch (error) {
+      console.log(error);
       return {
         status: HttpStatus.ServerError,
         data: {
@@ -123,7 +143,6 @@ class userUsecase {
   async findUser(header: IncomingHttpHeaders) {
     try {
       const token = header["authorization"];
-
       if (!token) {
         return {
           status: HttpStatus.ServerError,
@@ -136,7 +155,7 @@ class userUsecase {
 
       const decode = this.decodeToken(token);
       const response = await this.userRepository.findUser(decode.id);
-
+  
       if (!response.data) {
         return {
           status: response.success
@@ -248,6 +267,7 @@ class userUsecase {
     try {
       const {email} = body
       const otp: string = `${Math.floor(1000 + Math.random() * 9000)}`;
+      console.log(otp);
       await this.otpRepository.deleteOtp(email);
       const response = await this.otpRepository.storeOtp({email, otp})
       if(!response.success){
@@ -308,15 +328,29 @@ class userUsecase {
       };
     }
   }
-  async verifyOTP(body:any){
+  async  verifyOTP(body:any){
     try {
       const {email , otp} = body
       const isValid = await this.otpRepository.checkOtp({email , otp})
+      const response = await this.userRepository.authenticateUser(email);
+      console.log(response.data?._id);
+      
+      const token = jwt.sign(
+        {
+          id: response.data?._id,
+          email: response.data?.email,
+          role: response.data?.role,
+        },
+        "itssecret"
+      );
+      
+
       return {
         status: isValid.success ? HttpStatus.Success : HttpStatus.ServerError,
         data: {
           success: isValid.success,
           message: isValid.message,
+          token: token,
         },
       };
     } catch (error) {

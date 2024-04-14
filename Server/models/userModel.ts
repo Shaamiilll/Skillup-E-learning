@@ -31,6 +31,11 @@ const userSchema = new mongoose.Schema<Iuser>({
     type: Boolean,
     default: false,
   },
+  verification: {
+    "0": String,
+    "1": String,
+    "2": String,
+  },
   wishlist: [
     {
       type: mongoose.Types.ObjectId,

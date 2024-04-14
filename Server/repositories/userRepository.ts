@@ -95,7 +95,6 @@ class UserRepository {
       const userDetails = await Users.findByIdAndUpdate(id, updates, {
         new: true,
       });
-      console.log(userDetails);
       
       if (!userDetails) {
         return {
