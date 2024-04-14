@@ -9,9 +9,7 @@ import ProfileMenu from "./ProfileMenu"; // Import the ProfileMenu component
 function AuthSection() {
   const token = localStorage.getItem("skillUpToken");
   const dispatch: AppDispatch = useDispatch();
-  
   const userDetails = useSelector(selectUser);
-
   useEffect(() => {
     if (token) {
       dispatch(getUser());

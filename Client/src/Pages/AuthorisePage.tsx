@@ -72,7 +72,7 @@ function AuthorisePage() {
         toast(res.data.message);
       }
       dispatch(getUser());
-      toast(`${res.data.user.name} is now Instructor`);
+      toast(`${res.data.user.name} will be Instructor when admin approved`);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         toast(error?.response?.data?.message);

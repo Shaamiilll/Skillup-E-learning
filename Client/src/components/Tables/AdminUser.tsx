@@ -45,6 +45,7 @@ export default function AdminUser() {
   const token = localStorage.getItem("skillUpToken")
   const dispatch: AppDispatch = useDispatch();
   const data = useSelector(selectStudents);
+  
   const [search, setSearch] = useState("");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [userIdToBlock, setUserIdToBlock] = useState("");

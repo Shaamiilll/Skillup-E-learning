@@ -4,18 +4,21 @@ import api from "../../axios/api";
 import toast from "react-hot-toast";
 
 
-export const getStudents = createAsyncThunk(
-  "students/getstudents",
+
+
+export const getInstructors = createAsyncThunk(
+  "instructors/getinstructors",
+
   async (search: string, { rejectWithValue }) => {
+    
     try {
-   
-      
+  
       const response = await api.get(
         search
-          ? `/user?role=student&search=${search}`
-          : `/user?role=student`
+          ? `/user?role=instructor&search=${search}`
+          : `/user?role=instructor`
       );
-    
+      
       
       if (!response.data.users) {
         toast(response.data.message);
