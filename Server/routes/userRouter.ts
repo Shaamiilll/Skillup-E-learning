@@ -49,6 +49,15 @@ Router.patch(
     (req: Request, res: Response) => userController.updateStatus(req, res)
 );
 
+Router.patch(
+  "/instructor/verify",
+  (req: Request, res: Response, next: NextFunction) =>
+    authMiddleware.authUser(req, res, next),
+  (req: Request, res: Response, next: NextFunction) =>
+    authMiddleware.adminCheck(req, res, next),
+  (req: Request, res: Response) => userController.verifyInstructor(req, res)
+);
+
 Router.post(
     "/authorize",
     (req: Request, res: Response, next: NextFunction) =>

@@ -10,10 +10,8 @@ class UserController {
 
   async getUsers(req: Request, res: Response){
     try {
-
       const response = await this.userUsecase.getUsers(req.query);
       res.status(response?.status).send(response?.data);
-
     } catch (error) {
       res.status(500).send({
         success: false,
@@ -97,6 +95,18 @@ class UserController {
   async updateRole(req:Request , res:Response){
     try {
       const response = await this.userUsecase.updateRole(req.body);
+      res.status(response.status).send(response.data);
+    } catch (error) {
+      res.status(500).send({
+        success: false,
+        message: "server error",
+      });
+    }
+  }
+
+  async verifyInstructor(req:Request , res:Response){
+    try {
+      const response = await this.userUsecase.updateUser(req.body);
       res.status(response.status).send(response.data);
     } catch (error) {
       res.status(500).send({

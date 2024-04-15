@@ -371,17 +371,17 @@ class userUsecase {
         let transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
-            user: process.env.verifyAppEmail,
-            pass: process.env.verifyAppPassword,
+            user: process.env.VERIFY_APP_EMAIL,
+            pass: process.env.VERIFY_APP_PASSWORD,
           },
         });
         const mailOptions = {
-          from: process.env.verifyAppEmail,
+          from: process.env.VERIFY_APP_EMAIL,
           to: response.data?.email,
-          subject: "SkillStream approved you as Instructor",
+          subject: "SkillUp approved you as Instructor",
           html: `<div style="display:flex;justify-content:center ">
           <div style="border-width:1px">
-          <p>Hey ${response.data?.name} You are now able to instruct students in <b style="color:red;">SkillStream</b> <br> Good luck for your bright future with skillstream</p><br>
+          <p>Hey ${response.data?.name} You are now able to instruct students in <b style="color:red;">SkillUp</b> <br> Good luck for your bright future with SkillUp</p><br>
           <i>Keep your trust and ethics with us and lets embark the journey</i>
           </div>
           </div>`,
