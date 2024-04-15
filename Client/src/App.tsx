@@ -16,6 +16,7 @@ const AdminDashboardPage = lazy(()=> import('./Pages/AdminDashboardPage'))
 const AdminUserManagement = lazy(()=> import('./Pages/AdminUserManagement'))
 const AdminInstructorManagement = lazy(()=> import('./Pages/AdminInstructorManagement'))
 const InstructorHomePage = lazy(()=> import('./Pages/InstructorHomePage'))
+const InstructorCoursePage = lazy(()=> import('./Pages/InstructorCoursePage'))
 
 function App() {
   const Dispatch :AppDispatch= useDispatch()
@@ -45,6 +46,7 @@ function App() {
               <Route path="/admin/students" element={<Suspense fallback={<Spinner />}><AdminUserManagement /></Suspense>} />
               <Route path="/admin/instructor" element={<Suspense fallback={<Spinner />}><AdminInstructorManagement /></Suspense>} />
               <Route path="/instructor" element={<Suspense fallback={<Spinner />}><InstructorHomePage /></Suspense>} />
+              <Route path="/instructor/courses" element={<Suspense fallback={<Spinner />}><InstructorCoursePage /></Suspense>} />
              
             </Routes>
           </BrowserRouter>

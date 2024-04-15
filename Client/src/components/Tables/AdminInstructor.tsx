@@ -15,6 +15,7 @@ function AdminInstructor() {
   const [filteredInstructors, setFilteredInstructors] = useState(allInstructors);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [userIdToBlock, setUserIdToBlock] = useState('');
+  const [userIdToApprove, setUserIdToApprove] = useState('');
   const [userStatus, setUserStatus] = useState(Boolean);
   const [viewType, setViewType] = useState('approved'); 
 
@@ -39,33 +40,49 @@ function AdminInstructor() {
     }
   }, [allInstructors, viewType]);
 
-  const handleApprove = async (userId: string) => {
-    try {
-      // Perform the approve action
-      await api.patch(
-        `/user/approve?_id=${userId}`,
-        {},
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
-      // Show success message
-      toast.success('User has been approved');
-      // Reload the data
-      dispatch(getInstructors(''));
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('An error occurred while processing the request');
-    }
-  };
 
   const handleBlock = async (userId: string, isBlock: boolean) => {
     setUserIdToBlock(userId);
     setUserStatus(isBlock);
     setShowConfirmationModal(true);
   };
+
+  const handleApprove = async (userId: string) => {
+    setUserIdToApprove(userId);
+    setShowConfirmationModal(true);
+  };
+
+  const handleApproveConfirmation = async (confirm: boolean) => {
+    if (confirm) {
+      try {
+        // Perform the approve action
+        await api.patch(
+          `/user/instructor/verify`,
+          {_id:userIdToApprove , verified:true},
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
+        // Show success message
+        toast.success('User has been approved');
+        // Reload the data
+        dispatch(getInstructors(''));
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          toast(error?.response?.data?.message);
+        } else {
+          toast("An unexpected error occurred");
+        }
+      }
+    }
+  
+    // Close the confirmation modal
+    setShowConfirmationModal(false);
+  };
+  
+  
 
   const handleConfirmation = async (confirm: boolean) => {
     if (confirm) {
@@ -169,26 +186,37 @@ function AdminInstructor() {
       </table>
       {/* Confirmation modal */}
       <Modal
-        isVisible={showConfirmationModal}
-        onClose={() => setShowConfirmationModal(false)}
+  isVisible={showConfirmationModal}
+  onClose={() => setShowConfirmationModal(false)}
+>
+  <h3>Confirmation</h3>
+  <p>Are you sure you want to proceed?</p>
+  <div className="flex justify-center mt-4">
+    {viewType === 'approved' ? (
+      <button
+        className="mr-4 bg-green-500 text-white px-4 py-2 rounded-md"
+        onClick={() => handleConfirmation(true)}
       >
-        <h3>Confirmation</h3>
-        <p>Are you sure you want to proceed?</p>
-        <div className="flex justify-center mt-4">
-          <button
-            className="mr-4 bg-green-500 text-white px-4 py-2 rounded-md"
-            onClick={() => handleConfirmation(true)}
-          >
-            Yes
-          </button>
-          <button
-            className="bg-red-500 text-white px-4 py-2 rounded-md"
-            onClick={() => handleConfirmation(false)}
-          >
-            No
-          </button>
-        </div>
-      </Modal>
+        {userStatus ? 'Unblock' : 'Block'}
+      </button>
+    ) : (
+      <button
+        className="mr-4 bg-green-500 text-white px-4 py-2 rounded-md"
+        onClick={() => handleApproveConfirmation(true)}
+      >
+        Approve
+      </button>
+    )}
+    <button
+      className="bg-red-500 text-white px-4 py-2 rounded-md"
+      onClick={() => handleConfirmation(false)}
+    >
+      No
+    </button>
+  </div>
+</Modal>
+
+
     </>
   );
 }

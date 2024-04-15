@@ -65,7 +65,7 @@ function InstructorSideBar() {
           <div
             className={`flex flex-col ${
               collapsed ? "w-[10vw]" : "w-60"
-            } bg-gradient-to-r from-gray-900 to-slate-950 overflow-hidden rounded-r-3xl`}
+            } bg-gradient-to-r from-gray-900 to-slate-950 overflow-hidden `}
           >
             <div className="flex items-center h-16 shadow-md py-1">
               <div className="text-3xl flex items-center font-semibold">

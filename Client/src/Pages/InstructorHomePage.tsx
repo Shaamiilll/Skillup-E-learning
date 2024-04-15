@@ -5,7 +5,6 @@ import InstructorDashboard from '../components/Dashboard/InstructorDashboard';
 
 function InstructorHomePage() {
     const user = useSelector(selectUser).user;
-    console.log(user)
 
   return (
     <div className={`${user?.verified && "min-h-screen flex flex-row"}`}>
