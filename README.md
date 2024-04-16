@@ -4,21 +4,7 @@
 Skillup is an innovative E-Learning web application designed to provide a comprehensive solution for individuals seeking diverse e-learning opportunities. Unlike conventional platforms, SkillStream offers a wide range of course-based e-learning classes created by instructors, along with unique features to enhance the learning experience.
 ## Key Features
 
-### Admin Features
-- **Product Management**: Administrators can add and manage products available for purchase.
-- **Offer Management**: Admins can create and manage product offers and coupons, including flat amount and percentage discounts.
-- **Payment Methods**: INFINTY supports both online payment (via Razorpay) and Cash on Delivery (COD) options.
-- **Wallet System**: Users can receive refunds for returned products directly into their wallet, which can be used for future purchases.
-- **Order Tracking**: Efficient order status tracking system for administrators to monitor orders and manage deliveries.
-- **Sales Analytics**: Detailed sales tracking and analysis tools for administrators to gain insights into the performance of the e-commerce platform.
-
-### User Features
-- **Easy Shopping**: Users can browse through products, add them to cart, and make purchases with ease.
-- **Offers and Discounts**: Customers can avail of product offers and coupons during checkout.
-- **Multiple Payment Options**: Customers can choose between online payment and Cash on Delivery.
-- **Wallet Integration**: Users have access to a wallet system for convenient refunds and payments.
-- **Order Tracking**: Real-time order tracking for users to monitor the status of their purchases.
-- **Return and Cancel**: Users can initiate returns or cancellations for individual products within their orders.
+Currently Working on this Project
 
 ## Technologies Used
 - MongoDB: Database for storing application data.
