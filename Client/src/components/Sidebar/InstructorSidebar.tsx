@@ -13,12 +13,42 @@ import { useDispatch, useSelector } from "react-redux";
 import { cleanUser , selectUser } from "../../Redux/slice/authSlice";
 import AuthorizePage from "../../Pages/AuthorisePage"
 import toast from "react-hot-toast";
+import api from "../../axios/api";
 
+interface user {
+  avatar: string;
+  email: string;
+  isBlock: boolean;
+  name: string;
+  role: string;
+  verification: { [key: number]: string }; // Define the type of verification property
+  verified: boolean;
+  wishlist: any[]; // Define the type of wishlist property if possible
+  __v: number;
+  _id: string;
+}
 function InstructorSideBar() {
   const token = localStorage.getItem("skillUpToken");
-  const user = useSelector(selectUser).user;
+  // const user = useSelector(selectUser).user;
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [user, setUser] = useState<user | null>(null);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get("/user/find");
+        setUser(response.data.user)
+      } catch (error) {
+        // Handle errors
+      }
+    };
+  
+    fetchData();
+  
+    // Specify dependencies if needed
+  }, []);
 
   const [collapsed, setCollapsed] = useState(true);
 
@@ -65,13 +95,13 @@ function InstructorSideBar() {
           <div
             className={`flex flex-col ${
               collapsed ? "w-[10vw]" : "w-60"
-            } bg-gradient-to-r from-gray-900 to-slate-950 overflow-hidden `}
+            } bg-gradient-to-r from-slate-50 to-slate-100 overflow-hidden `}
           >
-            <div className="flex items-center h-16 shadow-md py-1">
+            <div className="flex items-center h-16 py-1">
               <div className="text-3xl flex items-center font-semibold">
                 <>
                   <img src="/SkillStream-Logo.png" alt="" className="h-12" />
-                  {!collapsed && <p>SkillStream</p>}
+                  {!collapsed && <p>SkillUp</p>}
                 </>
               </div>
             </div>
@@ -80,9 +110,9 @@ function InstructorSideBar() {
                 collapsed ? "justify-start px-2" : "justify-center"
               }`}
             >
-              <div className="bg-slate-600 flex gap-2 mt-1 items-center px-2 rounded-md">
+              <div className="bg-white flex gap-2 mt-1 items-center px-2 rounded-md">
                 {!collapsed && (
-                  <p className="text-md text-center text-pink-600 font-bold">
+                  <p className="text-md text-center text-black font-bold">
                     Instructor
                   </p>
                 )}
@@ -95,10 +125,10 @@ function InstructorSideBar() {
                     to={"/instructor"}
                     className={`flex items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 ${
                       collapsed ? "justify-center" : ""
-                    } text-gray-500 hover:text-gray-300`}
+                    } text-black hover:text-black`}
                   >
                     <span
-                      className={`inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400 hover:text-gray-300 ${
+                      className={`inline-flex items-center justify-center h-12 w-12 text-lg text-black hover:text-gray-300 ${
                         collapsed ? "w-full" : ""
                       }`}
                     >
@@ -114,10 +144,10 @@ function InstructorSideBar() {
                     to={"/instructor/courses"}
                     className={`flex items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 ${
                       collapsed ? "justify-center" : ""
-                    } text-gray-500 hover:text-gray-300`}
+                    } text-black hover:text-black`}
                   >
                     <span
-                      className={`inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400 hover:text-gray-300 ${
+                      className={`inline-flex items-center justify-center h-12 w-12 text-lg text-black hover:text-gray-300 ${
                         collapsed ? "w-full" : ""
                       }`}
                     >
@@ -133,10 +163,10 @@ function InstructorSideBar() {
                     to={"/instructor/communities"}
                     className={`flex items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 ${
                       collapsed ? "justify-center" : ""
-                    } text-gray-500 hover:text-gray-300`}
+                    } text-black hover:text-black`}
                   >
                     <span
-                      className={`inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400 hover:text-gray-300 ${
+                      className={`inline-flex items-center justify-center h-12 w-12 text-lg text-black hover:text-gray-300 ${
                         collapsed ? "w-full" : ""
                       }`}
                     >
@@ -152,10 +182,10 @@ function InstructorSideBar() {
                     to={"/instructor/chats"}
                     className={`flex items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 ${
                       collapsed ? "justify-center" : ""
-                    } text-gray-500 hover:text-gray-300`}
+                    } text-black hover:text-black`}
                   >
                     <span
-                      className={`inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400 hover:text-gray-300 ${
+                      className={`inline-flex items-center justify-center h-12 w-12 text-lg text-black hover:text-gray-300 ${
                         collapsed ? "w-full" : ""
                       }`}
                     >
@@ -171,11 +201,11 @@ function InstructorSideBar() {
                     to={"/profile"}
                     className={`flex gap-3 items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 ${
                       collapsed ? "justify-center" : ""
-                    } text-gray-500 hover:text-gray-300`}
+                    } text-black hover:text-black`}
                   >
                     
                     <span
-                      className={`inline-flex items-center justify-center h-6 w-6 text-lg text-gray-400 hover:text-gray-300 ${
+                      className={`inline-flex items-center justify-center h-6 w-6 text-lg text-black hover:text-gray-300 ${
                         collapsed ? "w-full" : ""
                       }`}
                     >
@@ -199,7 +229,7 @@ function InstructorSideBar() {
                     } text-gray-500 hover:text-red-700`}
                   >
                     <span
-                      className={`inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400 hover:text-red-700 ${
+                      className={`inline-flex items-center justify-center h-12 w-12 text-lg text-black hover:text-red-700 ${
                         collapsed ? "w-full" : ""
                       }`}
                     >
@@ -220,7 +250,7 @@ function InstructorSideBar() {
             <Link
               to={"/"}
               type="button"
-              className="border rounded px-2 font-medium bg-gray-300 text-gray-800 hover:bg-gray-500 hover:text-white"
+              className="border rounded px-2 font-medium bg-gray-300 text-gray-800 hover:bg-black hover:text-white"
             >
               Back
             </Link>

@@ -6,7 +6,7 @@ function InstructorCoursePage() {
   return (
     <div className="min-h-screen flex flex-row">
       <InstructorSideBar />
-      <div className="w-full ">
+      <div className="w-full bg-slate-150">
         <div className="">
           <InstructorCourse />
         </div>
