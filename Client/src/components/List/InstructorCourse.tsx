@@ -1,15 +1,132 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useState, ChangeEvent } from "react";
 import { FaPlus } from "react-icons/fa";
+import api from "../../axios/api";
+
+interface CourseData {
+  title: string;
+  category: string;
+  description: string;
+  level: string;
+  language: string;
+  price: string;
+  thumbnail: File | null;
+  summaryVideo: File | null;
+  lessons: Lesson[];
+}
+
+interface Lesson {
+  title: string;
+  description: string;
+  video: File | null;
+}
 
 function InstructorCourse() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [password, setPassword] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [zip, setZip] = useState("");
-  const [newCourse, setNewCourse] = useState(false);
+  const [newCourse, setNewCourse] = useState<boolean>(false);
+  const [courseData, setCourseData] = useState<CourseData>({
+    title: "",
+    category: "",
+    description: "",
+    level: "",
+    language: "",
+    price: "",
+    thumbnail: null,
+    summaryVideo: null,
+    lessons: [],
+  });
+
+  // Function to handle adding a new lesson
+  const addLesson = () => {
+    setCourseData({
+      ...courseData,
+      lessons: [
+        ...courseData.lessons,
+        { title: "", description: "", video: null },
+      ],
+    });
+  };
+
+  // Function to handle removing a lesson
+  const removeLesson = (index: number) => {
+    const updatedLessons = [...courseData.lessons];
+    updatedLessons.splice(index, 1);
+    setCourseData({ ...courseData, lessons: updatedLessons });
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setCourseData({ ...courseData, [name]: value });
+  };
+
+  const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setCourseData({ ...courseData, [name]: value });
+  };
+
+  const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setCourseData({ ...courseData, [name]: value });
+  };
+
+  const handleThumbnailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      setCourseData({ ...courseData, thumbnail: file });
+    } else {
+      setCourseData({ ...courseData, thumbnail: null });
+    }
+  };
+
+  const handleSummaryVideoChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      setCourseData({ ...courseData, summaryVideo: file });
+    } else {
+      setCourseData({ ...courseData, summaryVideo: null });
+    }
+  };
+
+  const handleLessonTitleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    index: number
+  ) => {
+    const lessons = [...courseData.lessons];
+    lessons[index] = { ...lessons[index], title: e.target.value };
+    setCourseData({ ...courseData, lessons });
+  };
+
+  const handleLessonDescriptionChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    index: number
+  ) => {
+    const lessons = [...courseData.lessons];
+    lessons[index] = { ...lessons[index], description: e.target.value };
+    setCourseData({ ...courseData, lessons });
+  };
+
+  const handleLessonVideoChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const lessons = [...courseData.lessons];
+    const file = e.target.files && e.target.files[0];
+    lessons[index] = { ...lessons[index], video: file };
+    setCourseData({ ...courseData, lessons });
+  };
+  
   const [courseSections, setCourseSections] = useState<number[]>([1]); // State to manage dynamic course sections
+
+  const saveCourse = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      console.log(courseData);
+      await api.post("/course/create", courseData);
+    } catch (error) {
+      console.error("Error adding course:", error);
+    }
+  };
 
   const addMoreCourse = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -49,7 +166,7 @@ function InstructorCourse() {
             </div>
 
             <div className="p-8">
-              <form className="max-w-4xl mx-auto">
+              <form className="max-w-4xl mx-auto" onSubmit={saveCourse}>
                 <div className="flex flex-wrap -mx-3 mb-6">
                   <div className="w-full md:w-3/4 px-3 mb-6 md:mb-0">
                     <label
@@ -59,14 +176,17 @@ function InstructorCourse() {
                       Course Title
                     </label>
                     <input
-                      className="appearance-none block w-full bg-gray-200 text-gray-700 border  rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                      className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                       id="grid-first-name"
                       type="text"
                       placeholder="Jane"
+                      name="title"
+                      value={courseData.title}
+                      onChange={handleChange}
                     />
                     {/* <p className="text-red-500 text-xs italic">
-                      Please fill out this field.
-                    </p> */}
+                        Please fill out this field.
+                      </p> */}
                   </div>
                   <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
                     <label
@@ -79,6 +199,9 @@ function InstructorCourse() {
                       <select
                         className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                         id="grid-state"
+                        name="category"
+                        value={courseData.category}
+                        onChange={handleSelectChange}
                       >
                         {["Data Science", "Web developement", "Finance"].map(
                           (stateOption, index) => (
@@ -112,7 +235,10 @@ function InstructorCourse() {
                     <textarea
                       className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                       id="grid-password"
+                      name="description"
                       placeholder="Add Your Description"
+                      value={courseData.description}
+                      onChange={handleTextareaChange}
                     />
                     <p className="text-gray-600 text-xs italic text-start">
                       Make it as long and as crazy as you'd like
@@ -131,6 +257,9 @@ function InstructorCourse() {
                       <select
                         className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                         id="grid-state"
+                        name="level"
+                        value={courseData.level}
+                        onChange={handleSelectChange}
                       >
                         {["Beginner", "Intermediate", "Advanced"].map(
                           (stateOption, index) => (
@@ -162,6 +291,9 @@ function InstructorCourse() {
                       <select
                         className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                         id="grid-state"
+                        name="language"
+                        value={courseData.language}
+                        onChange={handleSelectChange}
                       >
                         {[
                           "English",
@@ -196,8 +328,11 @@ function InstructorCourse() {
                     <input
                       className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                       id="grid-zip"
-                      type="text"
+                      type="number"
                       placeholder="90210"
+                      name="price" // Add name attribute here
+                      value={courseData.price}
+                      onChange={handleChange} // Create a new handler function
                     />
                   </div>
                 </div>
@@ -209,11 +344,13 @@ function InstructorCourse() {
                     thumbnail
                   </label>
                   <input
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     id="grid-zip"
                     type="file"
+                    name="thumbnail"
                     placeholder="90210"
                     accept="image/*"
+                    onChange={handleThumbnailChange}
                   />
                 </div>
                 <div className="w-full md:w-1/3 pb-2 mb-6 md:mb-0">
@@ -227,31 +364,40 @@ function InstructorCourse() {
                     className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     id="grid-zip"
                     type="file"
+                    name="summaryVideo"
                     placeholder="90210"
                     accept="video/*"
+                    onChange={handleSummaryVideoChange}
                   />
                 </div>
 
                 <div className="border rounded-md border-gray-400 p-4 ">
                   <h1 className="text-start font-extrabold">Lessons</h1>
-                  {courseSections.map((section) => (
+                  {courseData.lessons.map((lesson, index) => (
                     <div
-                      key={section}
+                      key={index}
                       className="border rounded-md border-gray-400 p-4 mb-4"
                     >
-                      <h1 className="text-start font-semibold">Lesson {section}</h1>
+                      <div className="flex justify-between p-3">
+                      <h1 className="font-semibold">
+                        Lesson {index + 1}
+                      </h1>
+                      <h1 onClick={() => removeLesson(index)}>Remove</h1>
+                      </div>
                       <div className="w-full md:w-3/4 px-3 mb-6 md:mb-0">
                         <label
                           className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2 text-start"
-                          htmlFor={`grid-course-title-${section}`}
+                          htmlFor={`grid-course-title-${index}`}
                         >
                           Course Title
                         </label>
                         <input
                           className="appearance-none block w-full bg-gray-200 text-gray-700 border  rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                          id={`grid-course-title-${section}`}
+                          id={`grid-course-title-${index}`}
                           type="text"
-                          placeholder="Jane"
+                          value={lesson.title}
+                          onChange={(e) => handleLessonTitleChange(e, index)}
+                          placeholder="Lesson Title"
                         />
                       </div>
                       <div className="flex flex-wrap -mx-3 mb-6">
@@ -265,7 +411,11 @@ function InstructorCourse() {
                           <textarea
                             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                             id="grid-password"
-                            placeholder="Add Your Description"
+                            value={lesson.description}
+                            onChange={(e) =>
+                              handleLessonDescriptionChange(e, index)
+                            }
+                            placeholder="Lesson Description"
                           />
                           <p className="text-gray-600 text-xs italic text-start">
                             Make it as long and as crazy as you'd like
@@ -273,27 +423,27 @@ function InstructorCourse() {
                         </div>
                       </div>
                       <div className="w-full md:w-1/3 pb-2 mb-6 md:mb-0">
-                  <label
-                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2 text-start"
-                    htmlFor="grid-zip"
-                  >
-                  Lesson Video
-                  </label>
-                  <input
-                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="grid-zip"
-                    type="file"
-                    placeholder="90210"
-                    accept="video/*"
-                  />
-                </div>
-
+                        <label
+                          className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2 text-start"
+                          htmlFor="grid-zip"
+                        >
+                          Lesson Video
+                        </label>
+                        <input
+                          className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                          id="grid-zip"
+                          type="file"
+                          placeholder="90210"
+                          accept="video/*"
+                          onChange={(e) => handleLessonVideoChange(e, index)}
+                        />
+                      </div>
                     </div>
                   ))}
                   <div className="p-3">
                     <button
                       className="items-center gap-1 border px-5 py-2 focus:outline-none bg-slate-900 text-white rounded-md hover:bg-gray-200 hover:text-black"
-                      onClick={addMoreCourse}
+                      onClick={addLesson}
                     >
                       Add More
                     </button>
@@ -301,7 +451,10 @@ function InstructorCourse() {
                 </div>
 
                 <div>
-                  <button className="p-4 flex items-center gap-1 border px-5 py-2 focus:outline-none bg-slate-900 text-white rounded-md hover:bg-gray-200 hover:text-black">
+                  <button
+                    type="submit"
+                    className="p-4 flex items-center gap-1 border px-5 py-2 focus:outline-none bg-slate-900 text-white rounded-md hover:bg-gray-200 hover:text-black"
+                  >
                     Upload
                   </button>
                 </div>
