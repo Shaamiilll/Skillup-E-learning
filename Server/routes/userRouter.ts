@@ -64,4 +64,6 @@ Router.post(
       authMiddleware.authUser(req, res, next),
     (req: Request, res: Response) => userController.updateRole(req, res)
 );
+
+
 export default Router;

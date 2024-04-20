@@ -2,6 +2,7 @@ import { Request , Response } from "express";
 import connectDB from "./configs/Connection";
 import createServer from "./configs/Server";
 import userRoute from "./routes/userRouter"
+import courseRoute from "./routes/courseRouter";
 
 const { app, server } = createServer();
 
@@ -11,6 +12,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/user" , userRoute)
+app.use("/api/course", courseRoute);
 
 // Start the server
 
