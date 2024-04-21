@@ -1,8 +1,22 @@
-import React from "react";
-
+import  { useEffect, useState } from "react";
+import api from "../../axios/api";
+import Icourse from "../../../../Server/interfaces/course"
 function Landing() {
-  const courses = Array.from({ length: 8 }, (_, index) => index + 1); // Generate an array of 10 elements
 
+  const [courses , setCourse] = useState<Icourse[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get('course')
+        setCourse(response.data.courses)
+      } catch (error) {
+       console.log(error);
+      }
+    };
+    fetchData();
+  }, []); 
+  
   return (
     <div className="container mx-auto py-10">
       <div className="flex flex-col items-center justify-center mt-10">
@@ -29,14 +43,14 @@ function Landing() {
         {/* Course Cards */}
         {/* Repeat this block for each course */}
         {courses.map((value) => (
-          <div key={value} className="bg-white p-4 shadow-md rounded-lg">
+          <div key={String(value._id)} className="bg-white p-4 shadow-md rounded-lg">
             <img
-              src="https://cdn.dribbble.com/userupload/13812893/file/original-f60490f0b5f72496a42481f24f3aa299.png?resize=1504x1128"
+              src={value?.thumbnail}
               alt="Course"
               className="w-full h-40 object-cover rounded-lg mb-4"
             />
-            <h3 className="text-lg font-semibold mb-2">Course Title</h3>
-            <p className="text-sm text-gray-600">Course Description</p>
+            <h3 className="text-lg font-semibold mb-2">{value?.title}</h3>
+            <p className="text-sm text-gray-600">{value?.description}</p>
           </div>
         ))}
       </div>

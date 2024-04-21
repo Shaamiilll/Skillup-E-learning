@@ -68,21 +68,36 @@ function InstructorCourse() {
     setCourseData({ ...courseData, [name]: value });
   };
 
-  const handleThumbnailChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleThumbnailChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
-      setCourseData({ ...courseData, thumbnail: file });
+      const secureUrl = await uploadFile(file);
+      if (secureUrl) {
+        console.log(secureUrl);
+
+        setCourseData({ ...courseData, thumbnail: secureUrl });
+      } else {
+        setCourseData({ ...courseData, thumbnail: null });
+      }
     } else {
       setCourseData({ ...courseData, thumbnail: null });
     }
   };
 
-  const handleSummaryVideoChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleSummaryVideoChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
-      setCourseData({ ...courseData, summaryVideo: file });
+
+      const secureUrl = await uploadFile(file);
+      if (secureUrl) {
+        console.log(secureUrl);
+
+        setCourseData({ ...courseData, summaryVideo: secureUrl });
+      } else {
+        setCourseData({ ...courseData, summaryVideo: null });
+      }
     } else {
       setCourseData({ ...courseData, summaryVideo: null });
     }
@@ -115,13 +130,85 @@ function InstructorCourse() {
     lessons[index] = { ...lessons[index], video: file };
     setCourseData({ ...courseData, lessons });
   };
-  
+
   const [courseSections, setCourseSections] = useState<number[]>([1]); // State to manage dynamic course sections
 
+  const uploadFile = async (file: File | null) => {
+    const data = new FormData();
+    if (file) {
+      data.append("file", file);
+    }
+    console.log(file?.type);
+    
+
+    if (file?.type == "image/png") {
+      data.append("upload_preset", "images_preset");
+      data.append("cloud_name", "db2kn0rhf");
+
+      try {
+        let api = "https://api.cloudinary.com/v1_1/db2kn0rhf/image/upload";
+        const res = await axios.post(api, data, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: false,
+        });
+        const { secure_url } = res.data;
+        return secure_url;
+      } catch (error) {
+        console.log(error);
+        return null;
+      }
+    } else {
+      data.append("upload_preset", "Video_preset");
+      data.append("cloud_name", "db2kn0rhf");
+
+      try {
+        let api = "https://api.cloudinary.com/v1_1/db2kn0rhf/video/upload";
+        const res = await axios.post(api, data, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: false,
+        });
+        const { secure_url } = res.data;
+        return secure_url;
+      } catch (error) {
+        console.log(error);
+        return null;
+      }
+    }
+  };
   const saveCourse = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
+
+      formData.append("title", courseData.title);
+      formData.append("category", courseData.category);
+      formData.append("description", courseData.description);
+      formData.append("level", courseData.level);
+      formData.append("language", courseData.language);
+      formData.append("price", courseData.price);
+      if (courseData.thumbnail) {
+        formData.append("thumbnail", courseData.thumbnail);
+      }
+      if (courseData.summaryVideo) {
+        formData.append("summaryVideo", courseData.summaryVideo);
+      }
+
+      courseData.lessons.forEach((lesson, index) => {
+        formData.append(`lessons[${index}][title]`, lesson.title);
+        formData.append(`lessons[${index}][description]`, lesson.description);
+        if (lesson.video) {
+          formData.append(`lessons[${index}][video]`, lesson.video);
+        }
+      });
+
+     
+      // Make POST request using axios
       console.log(courseData);
+      
       await api.post("/course/create", courseData);
     } catch (error) {
       console.error("Error adding course:", error);
@@ -352,6 +439,7 @@ function InstructorCourse() {
                     accept="image/*"
                     onChange={handleThumbnailChange}
                   />
+                  {/* <div onClick={handleUpload}>button</div> */}
                 </div>
                 <div className="w-full md:w-1/3 pb-2 mb-6 md:mb-0">
                   <label
@@ -379,10 +467,8 @@ function InstructorCourse() {
                       className="border rounded-md border-gray-400 p-4 mb-4"
                     >
                       <div className="flex justify-between p-3">
-                      <h1 className="font-semibold">
-                        Lesson {index + 1}
-                      </h1>
-                      <h1 onClick={() => removeLesson(index)}>Remove</h1>
+                        <h1 className="font-semibold">Lesson {index + 1}</h1>
+                        <h1 onClick={() => removeLesson(index)}>Remove</h1>
                       </div>
                       <div className="w-full md:w-3/4 px-3 mb-6 md:mb-0">
                         <label
@@ -412,7 +498,7 @@ function InstructorCourse() {
                             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                             id="grid-password"
                             value={lesson.description}
-                            onChange={(e) =>
+                            onChange={(e:any) =>
                               handleLessonDescriptionChange(e, index)
                             }
                             placeholder="Lesson Description"
