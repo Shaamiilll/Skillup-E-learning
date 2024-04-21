@@ -49,7 +49,8 @@ function LoginSection() {
   };
   return (
     <>
-      <form onSubmit={handleSubmit} className="grid lg:grid-cols-3 w-4/6 gap-4">
+     <div className="flex justify-center items-center">
+     <form onSubmit={handleSubmit} className="grid lg:grid-cols-3 w-4/6 gap-4">
         <div className="input-type">
           <input
             type="text"
@@ -76,6 +77,8 @@ function LoginSection() {
           Submit <span className="px-1"></span>
         </button>
       </form>
+     </div>
+      
     </>
   );
 }

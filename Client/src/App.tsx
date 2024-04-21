@@ -9,6 +9,7 @@ import { getUser } from "./Redux/actions/authAction";
 import { AppDispatch } from "./Redux/store";
 
 
+
 const LandingPage = lazy(() => import('./Pages/LandingPage'))
 const SignupPage = lazy(()=> import ('./Pages/SignupPage'))
 const LoginPage = lazy(()=> import('./Pages/LoginPage'))
@@ -17,6 +18,8 @@ const AdminUserManagement = lazy(()=> import('./Pages/AdminUserManagement'))
 const AdminInstructorManagement = lazy(()=> import('./Pages/AdminInstructorManagement'))
 const InstructorHomePage = lazy(()=> import('./Pages/InstructorHomePage'))
 const InstructorCoursePage = lazy(()=> import('./Pages/InstructorCoursePage'))
+const AdminCoursePage = lazy(()=> import('./Pages/AdminCoursePage'))
+
 
 function App() {
   const Dispatch :AppDispatch= useDispatch()
@@ -47,6 +50,7 @@ function App() {
               <Route path="/admin/instructor" element={<Suspense fallback={<Spinner />}><AdminInstructorManagement /></Suspense>} />
               <Route path="/instructor" element={<Suspense fallback={<Spinner />}><InstructorHomePage /></Suspense>} />
               <Route path="/instructor/courses" element={<Suspense fallback={<Spinner />}><InstructorCoursePage /></Suspense>} />
+              <Route path="/admin/courses" element={<Suspense fallback={<Spinner />}><AdminCoursePage /></Suspense>} />
              
             </Routes>
           </BrowserRouter>

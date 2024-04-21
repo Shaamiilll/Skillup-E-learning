@@ -1,7 +1,13 @@
 import axios from "axios";
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import { FaPlus } from "react-icons/fa";
 import api from "../../axios/api";
+import { useDispatch, useSelector } from "react-redux";
+import { selectcourse } from "../../Redux/slice/courseSlice";
+import { AppDispatch } from "../../Redux/store";
+import { getCourses } from "../../Redux/actions/courseAction";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 interface CourseData {
   title: string;
@@ -22,6 +28,12 @@ interface Lesson {
 }
 
 function InstructorCourse() {
+  const Navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
+  const courses = useSelector(selectcourse).courses;
+  useEffect(() => {
+    dispatch(getCourses({ search: "", isInstructor: false }));
+  }, [dispatch]);
   const [newCourse, setNewCourse] = useState<boolean>(false);
   const [courseData, setCourseData] = useState<CourseData>({
     title: "",
@@ -139,9 +151,8 @@ function InstructorCourse() {
       data.append("file", file);
     }
     console.log(file?.type);
-    
 
-    if (file?.type == "image/png") {
+    if (file?.type == "image/png" || "image/jpeg") {
       data.append("upload_preset", "images_preset");
       data.append("cloud_name", "db2kn0rhf");
 
@@ -205,11 +216,18 @@ function InstructorCourse() {
         }
       });
 
-     
       // Make POST request using axios
       console.log(courseData);
-      
-      await api.post("/course/create", courseData);
+
+      const response = await api.post("/course/create", courseData);
+      if (response.data.success) {
+        
+        toast.success("Uploaded file");
+        setNewCourse(false)
+
+      }else{
+        toast.error(response.data.message)
+      }
     } catch (error) {
       console.error("Error adding course:", error);
     }
@@ -219,16 +237,6 @@ function InstructorCourse() {
     event.preventDefault();
     setCourseSections([...courseSections, courseSections.length + 1]);
   };
-  const courses = [
-    {
-      id: 1,
-      name: "Data Science Fundamentals",
-      description:
-        "This course provides a comprehensive introduction to the field of data science, covering essential concepts, techniques, and tools used in data analysis and interpretation. Students will learn fundamental programming languages such as Python and R, along with libraries like Pandas, NumPy, and Matplotlib for data manipulation, visualization, and analysis. Additionally, the course explores statistical methods, machine learning algorithms, and data mining techniques to extract meaningful insights from data. Practical exercises and real-world case studies help students develop hands-on experience in data science workflows, including data cleaning, exploratory data analysis, model building, and evaluation. By the end of the course, students will have the foundational knowledge and skills to pursue further studies or careers in data science.",
-      price: "$499",
-      status: "PENDING",
-    },
-  ];
 
   return (
     <>
@@ -498,7 +506,7 @@ function InstructorCourse() {
                             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                             id="grid-password"
                             value={lesson.description}
-                            onChange={(e:any) =>
+                            onChange={(e: any) =>
                               handleLessonDescriptionChange(e, index)
                             }
                             placeholder="Lesson Description"
@@ -575,20 +583,20 @@ function InstructorCourse() {
 
             <div>
               {courses.map((course) => (
-                <div key={course.id} className="bg-gray-100">
+                <div key={course.title} className="bg-gray-100">
                   <section>
                     <section className="text-gray-600 body-font">
                       <div className="container px-1 py-2 mx-auto">
                         <div className="p-3 bg-white flex items-center mx-auto border-b mb-5 border-gray-200 rounded-lg sm:flex-row flex-col">
                           <div className="sm:w-32 sm:h-24 h-16 w-16 sm:mr-6 inline-flex items-center justify-center flex-shrink-0 rounded-xl">
                             <img
-                              className="object-cover h-32 w-96 rounded-md"
-                              src="https://cdn.dribbble.com/userupload/13812893/file/original-f60490f0b5f72496a42481f24f3aa299.png?resize=1504x1128"
+                              className="object-cover h-28 w-96 rounded-md"
+                              src={course.thumbnail}
                             />
                           </div>
                           <div className="flex-grow sm:text-left text-center mt-4 sm:mt-0">
                             <h1 className="text-black text-xl sm:text-2xl title-font font-bold mb-2">
-                              {course.name}
+                              {course.title}
                             </h1>
                             <p className="leading-relaxed text-base">
                               {course.description.substring(0, 200)}...
@@ -598,9 +606,15 @@ function InstructorCourse() {
                                 <span className="text-purple-500 font-bold">
                                   Status:
                                 </span>{" "}
-                                <span className="text-purple-500">
-                                  {course.status}
-                                </span>
+                                {course.isApproved ? (
+                                  <button className="text-indigo-500 inline-flex items-center">
+                                    Approved
+                                  </button>
+                                ) : (
+                                  <button className="text-indigo-500 inline-flex items-center">
+                                    Approve
+                                  </button>
+                                )}
                               </div>
                               <div>
                                 <span className="text-purple-500 font-bold">

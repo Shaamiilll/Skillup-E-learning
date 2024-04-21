@@ -9,7 +9,8 @@ function Landing() {
     const fetchData = async () => {
       try {
         const response = await api.get('course')
-        setCourse(response.data.courses)
+        const approvedCourses = response.data.courses.filter((course: Icourse) => course.isApproved);
+        setCourse(approvedCourses)
       } catch (error) {
        console.log(error);
       }
@@ -50,7 +51,7 @@ function Landing() {
               className="w-full h-40 object-cover rounded-lg mb-4"
             />
             <h3 className="text-lg font-semibold mb-2">{value?.title}</h3>
-            <p className="text-sm text-gray-600">{value?.description}</p>
+            <p className="text-sm text-gray-600">{value.description.substring(0,60)}...</p>
           </div>
         ))}
       </div>
