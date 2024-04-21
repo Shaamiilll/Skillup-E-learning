@@ -38,5 +38,11 @@ Router.get("/", (req: Request, res: Response) =>
   courseController.getCourses(req, res)
 );
 
+Router.patch(
+  "/update",
+  (req: Request, res: Response, next: NextFunction) =>
+    authMiddleware.authUser(req, res, next),
+  (req: Request, res: Response) => courseController.updateCourse(req, res)
+);
 
 export default Router;

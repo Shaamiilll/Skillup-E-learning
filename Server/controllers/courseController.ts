@@ -34,6 +34,18 @@ class courseController {
     }
   }
 
+  async updateCourse(req: Request, res: Response) {
+    try {
+      const response = await this.courseUsecase.updateCourse(req.body);
+      res.status(response.status).send(response.data);
+    } catch (error) {
+      res.status(500).send({
+        success: false,
+        message: "server error",
+      });
+    }
+  }
+
 }
 
 export default courseController;

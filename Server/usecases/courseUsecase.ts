@@ -5,9 +5,7 @@ import UserRepository from "../repositories/UserRepository";
 import courseRepository from "../repositories/courseRepository";
 import dotenv from "dotenv";
 dotenv.config();
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import crypto from "crypto";
-import sharp from "sharp";
+
 
 class courseUsecase {
   private decodeToken(token: string): MyJWTPayLoad {
@@ -29,25 +27,6 @@ class courseUsecase {
 
   async createCourse(fields: ICourse, token: string) {
     try {
-      console.log(fields);
-      
-      // if (
-      //   !fields.title ||
-      //   !fields.description ||
-      //   !fields.language ||
-      //   !fields.level ||
-      //   !fields.category ||
-      //   !fields.price ||
-      //   !fields.thumbanail
-      // ) {
-      //   return {
-      //     status: 404,
-      //     data: {
-      //       success: false,
-      //       message: "Provide necessary fields",
-      //     },
-      //   };
-      // }
       const user = this.decodeToken(token);
       fields = { ...fields, instructor: user.id };
       const res = await this.courseRepository.createCourse(fields);
@@ -60,7 +39,6 @@ class courseUsecase {
           },
         };
       }
-
       return {
         status: res.success ? 200 : 500,
         data: {
@@ -78,6 +56,7 @@ class courseUsecase {
       };
     }
   }
+
   async getCourses(query: any) {
     try {
       const { search } = query;
@@ -89,6 +68,28 @@ class courseUsecase {
           success: res.success,
           message: res.message,
           courses: res.courses,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 500,
+        data: {
+          success: false,
+          message: "server error",
+        },
+      };
+    }
+  }
+  async updateCourse(data: ICourse) {
+    try {
+      let { _id } = data;
+
+      const res = await this.courseRepository.updateCourse(_id as string, data);
+      return {
+        status: res.success ? 200 : 500,
+        data: {
+          success: res.success,
+          message: res.message,
         },
       };
     } catch (error) {

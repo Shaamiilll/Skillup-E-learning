@@ -1,5 +1,6 @@
 import Courses from "../models/courseModel"
 import Icourse from "../interfaces/course"
+import ICourse from "../interfaces/course";
 
 class courseRepository{
     async createCourse(details:Icourse){
@@ -40,13 +41,33 @@ class courseRepository{
                 // .populate("category", "name")
                 // .populate("reviews.user", "name")
                 // .sort({ _id: -1 });
-            
-             
-              
           return {
             success: true,
             message: "Fetch all caetgories",
             courses,
+          };
+        } catch (error) {
+          return {
+            success: false,
+            message: `Failed to fetch ${error}`,
+          };
+        }
+      }
+
+      async updateCourse(id: string, updates: ICourse) {
+        try {
+          const updated = await Courses.findByIdAndUpdate(id, updates, {
+            new: true,
+          });
+          if (!updated) {
+            return {
+              success: false,
+              message: "Unable to update right now",
+            };
+          }
+          return {
+            success: true,
+            message: "Updated the Course",
           };
         } catch (error) {
           return {
