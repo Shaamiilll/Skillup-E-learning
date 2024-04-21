@@ -17,6 +17,8 @@ Currently Working on this Project
 - JWT (JSON Web Tokens): Authentication mechanism.
 - TypeScript: Superset of JavaScript with static typing.
 - Clean Architecture: Design principle for scalable and maintainable applications.
+- Cloudinary web services : for storing the Images and Videos
+  
 ## Usage
 To start using SkillUp:
 1. Visit SkillUp Website and sign up for an account.
