@@ -4,8 +4,16 @@ import UserRepository from "../repositories/UserRepository";
 import CourseController from "../controllers/courseController";
 import CourseRepository from "../repositories/courseRepository";
 import CourseUsecase from "../usecases/courseUsecase";
-
+import multer from "multer";
 const Router = express.Router();
+
+const storage= multer.memoryStorage()
+const upload = multer({ storage });
+const fields = [
+  { name: 'thumbnail', maxCount: 1 },
+  { name: 'summaryVideo', maxCount: 1 },
+  { name: 'lessons', maxCount: Infinity },
+];
 
 const userRepository = new UserRepository();
 const authMiddleware = new AuthMiddleware(userRepository);
@@ -16,7 +24,7 @@ const courseUsecase = new CourseUsecase(
     userRepository
   );
 
-  
+
 const courseController = new CourseController(courseUsecase);
 
 Router.post(
@@ -25,5 +33,10 @@ Router.post(
     authMiddleware.authUser(req, res, next),
   (req: Request, res: Response) => courseController.createCourse(req, res)
 );
+
+Router.get("/", (req: Request, res: Response) =>
+  courseController.getCourses(req, res)
+);
+
 
 export default Router;

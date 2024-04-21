@@ -3,6 +3,11 @@ import MyJWTPayLoad from "../interfaces/jwt";
 import jwt from "jsonwebtoken";
 import UserRepository from "../repositories/UserRepository";
 import courseRepository from "../repositories/courseRepository";
+import dotenv from "dotenv";
+dotenv.config();
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import crypto from "crypto";
+import sharp from "sharp";
 
 class courseUsecase {
   private decodeToken(token: string): MyJWTPayLoad {
@@ -11,6 +16,7 @@ class courseUsecase {
 
   private courseRepository: courseRepository;
   private userRepository: UserRepository;
+  //   private s3Bucket: S3Bucket;
 
   constructor(
     courseRepository: courseRepository,
@@ -18,32 +24,73 @@ class courseUsecase {
   ) {
     this.courseRepository = courseRepository;
     this.userRepository = userRepository;
+    // this.s3Bucket = new S3Bucket();
   }
 
   async createCourse(fields: ICourse, token: string) {
     try {
-      if (
-        !fields.title ||
-        !fields.description ||
-        !fields.category ||
-        !fields.level ||
-        !fields.language ||
-        !fields.price
-      ) {
+      console.log(fields);
+      
+      // if (
+      //   !fields.title ||
+      //   !fields.description ||
+      //   !fields.language ||
+      //   !fields.level ||
+      //   !fields.category ||
+      //   !fields.price ||
+      //   !fields.thumbanail
+      // ) {
+      //   return {
+      //     status: 404,
+      //     data: {
+      //       success: false,
+      //       message: "Provide necessary fields",
+      //     },
+      //   };
+      // }
+      const user = this.decodeToken(token);
+      fields = { ...fields, instructor: user.id };
+      const res = await this.courseRepository.createCourse(fields);
+      if (!res.data) {
         return {
-          status: 404,
+          status: 500,
           data: {
-            success: false,
-            message: "Provide necessary fields",
+            success: res.success,
+            message: res.message,
           },
         };
       }
-      const user = this.decodeToken(token)
-      fields={...fields,instructor:user.id}
-      console.log(fields);
-      
-      
-      
+
+      return {
+        status: res.success ? 200 : 500,
+        data: {
+          success: res.success,
+          message: res.message,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 500,
+        data: {
+          success: false,
+          message: "server error",
+        },
+      };
+    }
+  }
+  async getCourses(query: any) {
+    try {
+      const { search } = query;
+      const res = await this.courseRepository.getCourses(search);
+
+      return {
+        status: res.success ? 200 : 500,
+        data: {
+          success: res.success,
+          message: res.message,
+          courses: res.courses,
+        },
+      };
     } catch (error) {
       return {
         status: 500,

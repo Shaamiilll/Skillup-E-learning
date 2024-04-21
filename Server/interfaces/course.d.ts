@@ -10,7 +10,7 @@ interface IMCQ{
 }
 
 interface ICourse{
-    _id?:string|ObjectId
+    _id:string|ObjectId
     title:string
     description:string
     language:string
@@ -29,6 +29,8 @@ interface ICourse{
     offer:number
     isApproved:boolean
     isBlock:boolean
+    thumbnail: string; 
+    summaryVideo: string;
     
 }
 
