@@ -143,7 +143,7 @@ function InstructorCourse() {
     setCourseData({ ...courseData, lessons });
   };
 
-  const [courseSections, setCourseSections] = useState<number[]>([1]); // State to manage dynamic course sections
+  const [courseSections, setCourseSections] = useState<number[]>([1]); 
 
   const uploadFile = async (file: File | null) => {
     const data = new FormData();
@@ -151,13 +151,16 @@ function InstructorCourse() {
       data.append("file", file);
     }
     console.log(file?.type);
+   
 
-    if (file?.type == "image/png" || "image/jpeg") {
-      data.append("upload_preset", "images_preset");
+    if (file?.type == "video/mp4") {
+      console.log("video");
+      
+      data.append("upload_preset", "Video_preset");
       data.append("cloud_name", "db2kn0rhf");
 
       try {
-        let api = "https://api.cloudinary.com/v1_1/db2kn0rhf/image/upload";
+        let api = "https://api.cloudinary.com/v1_1/db2kn0rhf/video/upload";
         const res = await axios.post(api, data, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -171,11 +174,13 @@ function InstructorCourse() {
         return null;
       }
     } else {
-      data.append("upload_preset", "Video_preset");
+      console.log("image");
+      
+      data.append("upload_preset", "images_preset");
       data.append("cloud_name", "db2kn0rhf");
 
       try {
-        let api = "https://api.cloudinary.com/v1_1/db2kn0rhf/video/upload";
+        let api = "https://api.cloudinary.com/v1_1/db2kn0rhf/image/upload";
         const res = await axios.post(api, data, {
           headers: {
             "Content-Type": "multipart/form-data",

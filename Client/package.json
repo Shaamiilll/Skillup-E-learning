@@ -18,6 +18,7 @@
     "@mui/material": "^5.15.15",
     "@radix-ui/react-dialog": "^1.0.5",
     "@reduxjs/toolkit": "^2.2.2",
+    "@stripe/react-stripe-js": "^2.7.0",
     "aws-sdk": "^2.1603.0",
     "axios": "^1.6.8",
     "chart.js": "^4.4.2",

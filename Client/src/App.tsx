@@ -19,6 +19,7 @@ const AdminInstructorManagement = lazy(()=> import('./Pages/AdminInstructorManag
 const InstructorHomePage = lazy(()=> import('./Pages/InstructorHomePage'))
 const InstructorCoursePage = lazy(()=> import('./Pages/InstructorCoursePage'))
 const AdminCoursePage = lazy(()=> import('./Pages/AdminCoursePage'))
+const CoursePage = lazy(()=> import('./Pages/CoursePage'))
 
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
               <Route path="/instructor" element={<Suspense fallback={<Spinner />}><InstructorHomePage /></Suspense>} />
               <Route path="/instructor/courses" element={<Suspense fallback={<Spinner />}><InstructorCoursePage /></Suspense>} />
               <Route path="/admin/courses" element={<Suspense fallback={<Spinner />}><AdminCoursePage /></Suspense>} />
+              <Route path="/course" element={<Suspense fallback={<Spinner />}><CoursePage /></Suspense>} />
              
             </Routes>
           </BrowserRouter>

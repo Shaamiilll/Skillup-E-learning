@@ -1,23 +1,26 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../../axios/api";
-import Icourse from "../../../../Server/interfaces/course"
+import Icourse from "../../../../Server/interfaces/course";
+import { useNavigate } from "react-router-dom";
+
 function Landing() {
-
-  const [courses , setCourse] = useState<Icourse[]>([]);
-
+  const [courses, setCourse] = useState<Icourse[]>([]);
+  const navigate = useNavigate()
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.get('course')
-        const approvedCourses = response.data.courses.filter((course: Icourse) => course.isApproved);
-        setCourse(approvedCourses)
+        const response = await api.get("course");
+        const approvedCourses = response.data.courses.filter(
+          (course: Icourse) => course.isApproved
+        );
+        setCourse(approvedCourses);
       } catch (error) {
-       console.log(error);
+        console.log(error);
       }
     };
     fetchData();
-  }, []); 
-  
+  }, []);
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex flex-col items-center justify-center mt-10">
@@ -44,14 +47,22 @@ function Landing() {
         {/* Course Cards */}
         {/* Repeat this block for each course */}
         {courses.map((value) => (
-          <div key={String(value._id)} className="bg-white p-4 shadow-md rounded-lg">
+          
+          <div
+            key={String(value._id)}
+            className="bg-white p-4 shadow-md rounded-lg cursor-pointer"
+            onClick={() => {navigate(`/course?id=${value._id}`)}}
+          > 
             <img
               src={value?.thumbnail}
               alt="Course"
               className="w-full h-40 object-cover rounded-lg mb-4"
             />
             <h3 className="text-lg font-semibold mb-2">{value?.title}</h3>
-            <p className="text-sm text-gray-600">{value.description.substring(0,60)}...</p>
+            <p className="text-sm text-gray-600">
+              {value.description.substring(0, 60)}...
+            </p>
+            
           </div>
         ))}
       </div>
