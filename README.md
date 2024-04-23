@@ -18,6 +18,8 @@ Currently Working on this Project
 - TypeScript: Superset of JavaScript with static typing.
 - Clean Architecture: Design principle for scalable and maintainable applications.
 - Cloudinary web services : for storing the Images and Videos
+- Stripe : Online payment gateway
+- webrtc(implimenting)
   
 ## Usage
 To start using SkillUp:
