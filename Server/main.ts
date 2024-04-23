@@ -3,6 +3,7 @@ import connectDB from "./configs/Connection";
 import createServer from "./configs/Server";
 import userRoute from "./routes/userRouter"
 import courseRoute from "./routes/courseRouter";
+import orderRoute from "./routes/OrderRoute";
 
 const { app, server } = createServer();
 
@@ -13,6 +14,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/user" , userRoute)
 app.use("/api/course", courseRoute);
+app.use("/api/order", orderRoute);
 
 // Start the server
 

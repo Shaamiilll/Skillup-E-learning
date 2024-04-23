@@ -2,6 +2,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.556.0",
     "@aws-sdk/s3-request-presigner": "^3.556.0",
+    "@types/stripe": "^8.0.417",
     "aws-sdk": "^2.1603.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
@@ -13,7 +14,8 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.13",
-    "sharp": "^0.33.3"
+    "sharp": "^0.33.3",
+    "stripe": "^15.3.0"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
