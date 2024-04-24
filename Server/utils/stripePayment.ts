@@ -35,7 +35,7 @@ class StripePayments {
           quantity: 1,
         },
       ],mode: "payment",
-      success_url: `http://localhost:5173/`,
+      success_url: `http://localhost:5173/purchase?success=true&userId=${userId}&courseId=${ course._id}&price=${ course.price }`,
       cancel_url: `http://localhost:5173/`,
     });
     res.send({ url: session.url });

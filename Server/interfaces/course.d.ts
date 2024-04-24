@@ -1,7 +1,7 @@
 import { ObjectId } from "mongoose"
-import ICoupon from "./coupon"
+// import ICoupon from "./coupon"
 import ILesson from "./lesson"
-import IReviews from "./reviews"
+// import IReviews from "./reviews"
 
 interface IMCQ{
     question:string
@@ -21,8 +21,8 @@ interface ICourse{
     lessons:ILesson[]
     announcements:string[]
     mcq:IMCQ[]
-    coupons:ICoupon[]
-    reviews:IReviews[]
+    // coupons:ICoupon[]
+    // reviews:IReviews[]
     instructor:string|ObjectId
     enrollers:ObjectId[]
     price:number

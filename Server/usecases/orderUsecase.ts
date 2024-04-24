@@ -21,4 +21,52 @@ class OrderUsecase {
     this.userRepository = userRepository;
     this.courseRepository = courseRepository;
   }
+
+  async createOrder(body: any) {
+    try {
+      const { userId, courseId } = body;
+      const response = await this.courseRepository.findCourse(body.courseId);
+      if (!response.course) {
+        return {
+          status: 500,
+          data: {
+            success: false,
+            message: "No Course Found",
+          },
+        };
+      }
+      const orderRes = await this.orderRepository.createOrder({
+        userId: body.userId,
+        courseId: body.courseId,
+        price:Math.floor(response.course?.price),
+      });
+
+      if (!orderRes.order) {
+        return {
+          status: 500,
+          data: {
+            success: false,
+            message: "Order not saved",
+          },
+        };
+      }
+      return {
+        status: 200,
+        data: {
+          success: true,
+          message: "Order Saved",
+        },
+      };
+    } catch (error) {
+      return {
+        status: 500,
+        data: {
+          success: false,
+          message: "Server error",
+        },
+      };
+    }
+  }
 }
+
+export default OrderUsecase;

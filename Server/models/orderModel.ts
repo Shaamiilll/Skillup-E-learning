@@ -18,6 +18,7 @@ const orderSchema=new mongoose.Schema<IOrder>({
     },
     date:{
         type:Date,
+        default:Date.now()
     }
 })
 
