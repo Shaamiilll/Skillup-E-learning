@@ -20,7 +20,8 @@ const InstructorHomePage = lazy(()=> import('./Pages/InstructorHomePage'))
 const InstructorCoursePage = lazy(()=> import('./Pages/InstructorCoursePage'))
 const AdminCoursePage = lazy(()=> import('./Pages/AdminCoursePage'))
 const CoursePage = lazy(()=> import('./Pages/CoursePage'))
-
+const MyLearningPage = lazy(() => import('./Pages/MyLearningPage'));
+const PurchaseConfirmPage = lazy(() => import('./Pages/PurchaseConfirmPage'));
 
 function App() {
   const Dispatch :AppDispatch= useDispatch()
@@ -53,6 +54,8 @@ function App() {
               <Route path="/instructor/courses" element={<Suspense fallback={<Spinner />}><InstructorCoursePage /></Suspense>} />
               <Route path="/admin/courses" element={<Suspense fallback={<Spinner />}><AdminCoursePage /></Suspense>} />
               <Route path="/course" element={<Suspense fallback={<Spinner />}><CoursePage /></Suspense>} />
+              <Route path="/mylearning" element={<Suspense fallback={<Spinner />}><MyLearningPage /></Suspense>} />
+              <Route path="/purchase" element={<Suspense fallback={<Spinner />}><PurchaseConfirmPage/></Suspense>} />
              
             </Routes>
           </BrowserRouter>

@@ -12,7 +12,7 @@ function LoginSection() {
 
   useEffect(() => {
     if (token) {
-      toast("User already logged In");
+      toast.error("User already logged In");
       Navigate("/");
     }
   }, [Navigate]);

@@ -72,11 +72,11 @@ function ProfileMenu() {
               Profile
             </a>
             <a
-              href="#"
+              onClick={()=>{navigate('/mylearning')}}
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               role="menuitem"
             >
-              Settings
+              My Learning
             </a>
             <hr className="w-32 border-gray-300 my-2 opacity-35" />
 
