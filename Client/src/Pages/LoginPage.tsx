@@ -1,4 +1,3 @@
-import React from 'react'
 import BasicHeader from '../components/Headers/BasicHeader'
 import Footer from '../components/Footer/Footer'
 import LoginSection from '../components/Auth/LoginSection'
