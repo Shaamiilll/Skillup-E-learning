@@ -24,7 +24,7 @@ class OrderUsecase {
 
   async createOrder(body: any) {
     try {
-      const { userId, courseId } = body;
+    
       const response = await this.courseRepository.findCourse(body.courseId);
       if (!response.course) {
         return {
@@ -39,7 +39,10 @@ class OrderUsecase {
         userId: body.userId,
         courseId: body.courseId,
         price:Math.floor(response.course?.price),
-      });
+        date: new Date()
+      })
+      
+      
 
       if (!orderRes.order) {
         return {
