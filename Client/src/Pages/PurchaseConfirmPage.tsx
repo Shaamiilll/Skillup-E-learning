@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import api from "../axios/api";
@@ -10,12 +10,14 @@ interface Purchase {
   price: string | null;
 }
 
-function PurchaseConfirmPage() {
+const PurchaseConfirmPage = React.memo(() =>{
   const token = localStorage.getItem("skillUpToken");
   const navigate = useNavigate();
 
   const createPurchase = async (purchase: Purchase) => {
     try {
+      
+
       await api.post("/order/create", purchase);
       toast.success("Course purchased successfully");
      
@@ -43,15 +45,15 @@ function PurchaseConfirmPage() {
       navigate("/");
       return;
     }
-
+  
     if (!query || !userId || !courseId || !price) {
       navigate("/");
       return;
     }
-
+  
     createPurchase({ userId, courseId, price });
-  }, [token, navigate, query, userId, courseId, price]);
-
+  }, []); 
+  
   return (
     <div className="h-screen flex justify-center items-center">
     <div className="border px-4 py-1">
@@ -75,6 +77,6 @@ function PurchaseConfirmPage() {
   </div>
     
   );
-}
+})
 
 export default PurchaseConfirmPage;

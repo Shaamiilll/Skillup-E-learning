@@ -48,7 +48,8 @@ function InstructorCourse() {
   });
 
   // Function to handle adding a new lesson
-  const addLesson = () => {
+  const addLesson = (e: any) => {
+    e.preventDefault()
     setCourseData({
       ...courseData,
       lessons: [
@@ -85,6 +86,7 @@ function InstructorCourse() {
     if (files && files.length > 0) {
       const file = files[0];
       const secureUrl = await uploadFile(file);
+      
       if (secureUrl) {
         console.log(secureUrl);
 
@@ -133,13 +135,18 @@ function InstructorCourse() {
     setCourseData({ ...courseData, lessons });
   };
 
-  const handleLessonVideoChange = (
+  const handleLessonVideoChange = async(
     e: ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
+
     const lessons = [...courseData.lessons];
     const file = e.target.files && e.target.files[0];
-    lessons[index] = { ...lessons[index], video: file };
+    const secureUrl = await uploadFile(file);
+    console.log(secureUrl);
+    
+    lessons[index] = { ...lessons[index], video:secureUrl  };
+    
     setCourseData({ ...courseData, lessons });
   };
 
@@ -167,6 +174,10 @@ function InstructorCourse() {
           },
           withCredentials: false,
         });
+        console.log(res);
+        
+        console.log("hy");
+        
         const { secure_url } = res.data;
         return secure_url;
       } catch (error) {
@@ -213,13 +224,17 @@ function InstructorCourse() {
         formData.append("summaryVideo", courseData.summaryVideo);
       }
 
-      courseData.lessons.forEach((lesson, index) => {
-        formData.append(`lessons[${index}][title]`, lesson.title);
-        formData.append(`lessons[${index}][description]`, lesson.description);
+      for (let i = 0; i < courseData.lessons.length; i++) {
+        const lesson = courseData.lessons[i];
+        formData.append(`lessons[${i}][title]`, lesson.title);
+        formData.append(`lessons[${i}][description]`, lesson.description);
         if (lesson.video) {
-          formData.append(`lessons[${index}][video]`, lesson.video);
+          const lessonVideoUrl = await uploadFile(lesson.video);
+          if (lessonVideoUrl) {
+            formData.append(`lessons[${i}][video]`, lessonVideoUrl);
+          }
         }
-      });
+      }
 
       // Make POST request using axios
       console.log(courseData);
