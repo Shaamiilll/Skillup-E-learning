@@ -24,6 +24,7 @@ class OrderUsecase {
 
   async createOrder(body: any) {
     try {
+      const {courseId,userId} = body
     
       const response = await this.courseRepository.findCourse(body.courseId);
       if (!response.course) {
@@ -45,6 +46,18 @@ class OrderUsecase {
       
 
       if (!orderRes.order) {
+        return {
+          status: 500,
+          data: {
+            success: false,
+            message: "Order not saved",
+          },
+        };
+      }
+      const userRes = await this.userRepository.updateUserDirect(userId, {
+        $addToSet: { learnings: { course: courseId, progress: [] } },
+      });
+      if (!userRes.success) {
         return {
           status: 500,
           data: {

@@ -65,5 +65,11 @@ Router.post(
     (req: Request, res: Response) => userController.updateRole(req, res)
 );
 
+Router.get(
+  "/learnings",
+  (req: Request, res: Response, next: NextFunction) =>
+    authMiddleware.authUser(req, res, next),
+  (req: Request, res: Response) => userController.getUserLearnings(req, res)
+);
 
 export default Router;

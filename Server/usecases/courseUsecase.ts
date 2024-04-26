@@ -27,6 +27,8 @@ class courseUsecase {
 
   async createCourse(fields: ICourse, token: string) {
     try {
+      
+      
       const user = this.decodeToken(token);
       fields = { ...fields, instructor: user.id };
       const res = await this.courseRepository.createCourse(fields);

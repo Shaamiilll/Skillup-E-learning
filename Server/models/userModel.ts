@@ -42,6 +42,24 @@ const userSchema = new mongoose.Schema<Iuser>({
       ref: "Course",
     },
   ],
+  learnings: [
+    {
+      course: {
+        type: mongoose.Types.ObjectId,
+        ref: "Course",
+      },
+      progress: [
+        {
+          type: mongoose.Types.ObjectId,
+          ref: "Course",
+        },
+      ],
+      certificate: {
+        type: Boolean,
+        default: false,
+      },
+    },
+  ],
 });
 
 const userModel = mongoose.model("User", userSchema);

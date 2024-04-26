@@ -23,6 +23,8 @@ const CourseSchema = new mongoose.Schema<ICourse>({
       content: String,
       title: String,
       Discription: String,
+      video:String,
+      description:String
     },
   ],
   preview: {

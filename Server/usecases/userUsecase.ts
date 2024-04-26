@@ -7,9 +7,9 @@ import bcrypt from "bcrypt";
 import MyJWTPayLoad from "../interfaces/jwt";
 import { IncomingHttpHeaders } from "http";
 import { UserRole } from "../enums/userRoleEnum";
-import OtpRepository from "../repositories/otpRepository"; 
-import nodemailer from "nodemailer"
-dotenv.config()
+import OtpRepository from "../repositories/otpRepository";
+import nodemailer from "nodemailer";
+dotenv.config();
 
 class userUsecase {
   private userRepository: UserRepository;
@@ -19,12 +19,12 @@ class userUsecase {
     return jwt.verify(token, "itssecret") as MyJWTPayLoad;
   }
 
-  constructor(userRepository: UserRepository, otpRepository:OtpRepository  ) {
+  constructor(userRepository: UserRepository, otpRepository: OtpRepository) {
     this.userRepository = userRepository;
     this.otpRepository = otpRepository;
   }
 
-  async getUsers(query:any){
+  async getUsers(query: any) {
     try {
       const { role, search } = query;
       const response = await this.userRepository.getUsers(role, search);
@@ -62,7 +62,7 @@ class userUsecase {
           },
         };
       }
-      if(!password){
+      if (!password) {
         return {
           status: HttpStatus.ServerError,
           data: {
@@ -72,7 +72,7 @@ class userUsecase {
         };
       }
 
-      if(!confirmPassword){
+      if (!confirmPassword) {
         return {
           status: HttpStatus.ServerError,
           data: {
@@ -155,7 +155,7 @@ class userUsecase {
 
       const decode = this.decodeToken(token);
       const response = await this.userRepository.findUser(decode.id);
-  
+
       if (!response.data) {
         return {
           status: response.success
@@ -265,12 +265,12 @@ class userUsecase {
 
   async sendOTP(body: any) {
     try {
-      const {email} = body
+      const { email } = body;
       const otp: string = `${Math.floor(1000 + Math.random() * 9000)}`;
       console.log(otp);
       await this.otpRepository.deleteOtp(email);
-      const response = await this.otpRepository.storeOtp({email, otp})
-      if(!response.success){
+      const response = await this.otpRepository.storeOtp({ email, otp });
+      if (!response.success) {
         return {
           status: HttpStatus.ServerError,
           data: {
@@ -281,22 +281,22 @@ class userUsecase {
       }
 
       let transporter = nodemailer.createTransport({
-        service:"gmail",
-        auth:{
-          user:process.env.VERIFY_APP_EMAIL,
-          pass:process.env.VERIFY_APP_PASSWORD
-        }
-      })
+        service: "gmail",
+        auth: {
+          user: process.env.VERIFY_APP_EMAIL,
+          pass: process.env.VERIFY_APP_PASSWORD,
+        },
+      });
 
-      const mailOptions={
-        from:process.env.VERIFY_APP_EMAIL,
-        to:email,
+      const mailOptions = {
+        from: process.env.VERIFY_APP_EMAIL,
+        to: email,
         subject: "Verify Your Email in SkillUp",
         html: `<p>Hey ${email} Here is your Verification OTP: <br> Your OTP is <b>${otp}</b> </p><br>
               <i>Otp will Expire in 30 seconds</i>`,
       };
-      transporter.sendMail(mailOptions , (err)=>{
-        if(err){
+      transporter.sendMail(mailOptions, (err) => {
+        if (err) {
           console.log("Error occurred");
           console.log(err);
           return {
@@ -306,10 +306,10 @@ class userUsecase {
               message: "server error",
             },
           };
-        }else{
+        } else {
           console.log("Code is sent");
         }
-      })
+      });
       return {
         status: HttpStatus.Success,
         data: {
@@ -328,13 +328,13 @@ class userUsecase {
       };
     }
   }
-  async  verifyOTP(body:any){
+  async verifyOTP(body: any) {
     try {
-      const {email , otp} = body
-      const isValid = await this.otpRepository.checkOtp({email , otp})
+      const { email, otp } = body;
+      const isValid = await this.otpRepository.checkOtp({ email, otp });
       const response = await this.userRepository.authenticateUser(email);
       console.log(response.data?._id);
-      
+
       const token = jwt.sign(
         {
           id: response.data?._id,
@@ -343,7 +343,6 @@ class userUsecase {
         },
         "itssecret"
       );
-      
 
       return {
         status: isValid.success ? HttpStatus.Success : HttpStatus.ServerError,
@@ -365,8 +364,8 @@ class userUsecase {
   }
   async updateUser(details: any) {
     try {
-    const { _id } = details;
-    const response = await this.userRepository.updateUser(_id, details);
+      const { _id } = details;
+      const response = await this.userRepository.updateUser(_id, details);
       if (details.verified && response.data) {
         let transporter = nodemailer.createTransport({
           service: "gmail",
@@ -418,9 +417,9 @@ class userUsecase {
       };
     }
   }
-  async updateRole(body:any){
+  async updateRole(body: any) {
     try {
-      const {id , updates} = body
+      const { id, updates } = body;
       const response = await this.userRepository.updateRole(id, updates);
       return {
         status: response.success ? HttpStatus.Success : HttpStatus.ServerError,
@@ -431,13 +430,36 @@ class userUsecase {
         },
       };
     } catch (error) {
-      return{
-        status:HttpStatus.ServerError,
-        data:{
-          success:false,
-          message:"Server error"
-        }
-      }
+      return {
+        status: HttpStatus.ServerError,
+        data: {
+          success: false,
+          message: "Server error",
+        },
+      };
+    }
+  }
+
+  async getUserLearnings(token: string) {
+    try {
+      const user = this.decodeToken(token);
+      const response = await this.userRepository.getUserLearnings(user.id);
+      return {
+        status: response.success ? HttpStatus.Success : HttpStatus.ServerError,
+        data: {
+          success: response.success,
+          message: response.message,
+          learnings: response?.data,
+        },
+      };
+    } catch (error) {
+      return {
+        status: HttpStatus.ServerError,
+        data: {
+          success: false,
+          message: "server error",
+        },
+      };
     }
   }
 }

@@ -5,8 +5,6 @@ import ICourse from "../interfaces/course";
 class courseRepository {
   async createCourse(details: ICourse) {
     try {
-      // console.log(details);
-
       const course = await Courses.create(details);
       if (!course) {
         return {
@@ -14,7 +12,7 @@ class courseRepository {
           message: `server error`,
         };
       }
-      console.log(course);
+     
 
       return {
         success: true,
