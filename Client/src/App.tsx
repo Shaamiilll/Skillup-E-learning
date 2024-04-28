@@ -13,6 +13,7 @@ import { AppDispatch } from "./Redux/store";
 const LandingPage = lazy(() => import('./Pages/LandingPage'))
 const SignupPage = lazy(()=> import ('./Pages/SignupPage'))
 const LoginPage = lazy(()=> import('./Pages/LoginPage'))
+const ProfilePage = lazy(() => import('./Pages/ProfilePage'));
 const AdminDashboardPage = lazy(()=> import('./Pages/AdminDashboardPage'))
 const AdminUserManagement = lazy(()=> import('./Pages/AdminUserManagement'))
 const AdminInstructorManagement = lazy(()=> import('./Pages/AdminInstructorManagement'))
@@ -56,6 +57,7 @@ function App() {
               <Route path="/course" element={<Suspense fallback={<Spinner />}><CoursePage /></Suspense>} />
               <Route path="/mylearning" element={<Suspense fallback={<Spinner />}><MyLearningPage /></Suspense>} />
               <Route path="/purchase" element={<Suspense fallback={<Spinner />}><PurchaseConfirmPage/></Suspense>} />
+              <Route path="/profile" element={<Suspense fallback={<Spinner />}><ProfilePage/></Suspense>} />
              
             </Routes>
           </BrowserRouter>

@@ -65,7 +65,9 @@ function ProfileMenu() {
             <h1 className="text-gray-700">{userDetails.user?.name}</h1>
             <hr className="w-32 border-gray-300 my-2 opacity-35" />
             <a
-              href="#"
+              onClick={()=>{
+                navigate("/profile")
+              }}
               className="block px-4 py-2 text-sm mt-2 text-gray-700 hover:bg-gray-100"
               role="menuitem"
             >
