@@ -62,18 +62,25 @@ class userUsecase {
 
         const name = response.data.given_name;
         const email = response.data.email;
-        const avatar = response.data.picture
-
+        const avatar = response.data.picture;
         const res = await this.userRepository.authenticateUser(email);
 
         if (res.data) {
-          return {
-            status: HttpStatus.ServerError,
-            data: {
-              success: false,
-              message: "Account Exist already",
-            },
-          };
+
+           const token = jwt.sign(
+          { id: res.data._id, email: res.data.email, role: res.data.role },
+          "itssecret"
+        );
+
+        return {
+          status: res.success ? HttpStatus.Success : HttpStatus.ServerError,
+          data: {
+            success: res.success,
+            message: "User Authenticated",
+            token: token,
+            admin: res.data.role == UserRole.Admin,
+          },
+        };
         }
 
         const result = await this.userRepository.createUser({
