@@ -16,16 +16,11 @@ function ProfileTab() {
         const response = await api.get("/user/find");
       
        setUser(response.data.user)
-       console.log(user?.name);
-
-       
-        
-        
+       console.log(user?.name) 
       } catch (error) {
         // Handle error
       }
     };
-  
     fetchData();
   
   }, []);

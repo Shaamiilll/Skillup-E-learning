@@ -3,6 +3,9 @@
   import toast from "react-hot-toast";
   import { useNavigate } from "react-router-dom";
   import Modal from "../common/Modal";
+import { FaGoogle } from "react-icons/fa";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 
   function SignupSection() {
     const navigate = useNavigate();
@@ -14,6 +17,30 @@
     const [showModal, setShowModal] = useState(false);
     const [otp, setOtp] = useState("");
     const [token, setToken] = useState("");
+
+
+    const handleGoogleLoginSuccess = async (tokenResponse: any) => {
+      try {
+        const accessToken = tokenResponse.access_token;
+        const res = await api.post("/user/register", {
+          googleAccessToken: accessToken,
+        });
+        if (!res.data.token) {
+          toast(res.data.message);
+          return;
+        }
+        localStorage.setItem("skillUpToken", res.data.token);
+        toast(`User account has been created`);
+        location.href = "/";
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          toast(error?.response?.data?.message);
+        } else {
+          toast("An unexpected error occurred");
+        }
+      }
+    };
+    const login = useGoogleLogin({ onSuccess: handleGoogleLoginSuccess });
 
     const handleSubmit = async (e: any) => {
       e.preventDefault();
@@ -137,8 +164,16 @@
           >
             Submit <span className="px-1"></span>
           </button>
+          
         </form>
-
+        <button
+                type="button"
+                onClick={() => login()}
+                className="flex items-center  gap-2 mt-9 bg-gradient-to-tr from-red-500 to-red-600 py-2 px-10 rounded-md"
+              >
+                <FaGoogle />
+                Sign Up with Google
+              </button>
         <Modal isVisible={showModal} onClose={closeModalAndNavigate}>
           <div className="flex justify-between items-center mb-4">
             <h3>Enter OTP</h3>

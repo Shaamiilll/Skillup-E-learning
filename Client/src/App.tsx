@@ -7,6 +7,7 @@ import "./App.css";
 import { useDispatch } from "react-redux";
 import { getUser } from "./Redux/actions/authAction";
 import { AppDispatch } from "./Redux/store";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 
 
@@ -44,6 +45,7 @@ function App() {
       <>
         <div className="min-h-screen  ">
           <BrowserRouter>
+          <GoogleOAuthProvider clientId="368073935489-sl89s1t7g5lp5rbe3t3550u9j7me8i27.apps.googleusercontent.com">
             <Routes>
               <Route path="/" element={<Suspense fallback={<Spinner />}><LandingPage /></Suspense>} />
               <Route path="/signup" element={<Suspense fallback={<Spinner />}><SignupPage /></Suspense>} />
@@ -60,6 +62,7 @@ function App() {
               <Route path="/profile" element={<Suspense fallback={<Spinner />}><ProfilePage/></Suspense>} />
              
             </Routes>
+            </GoogleOAuthProvider>
           </BrowserRouter>
         </div>
         <Toaster position="top-center" toastOptions={{ duration: 2000 }} />
