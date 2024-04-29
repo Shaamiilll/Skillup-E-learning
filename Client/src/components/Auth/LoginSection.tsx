@@ -23,7 +23,7 @@ function LoginSection() {
         toast(res.data.message);
         return;
       }
-      console.log("Is it hit here");
+    
       if (!res.data.success) {
         toast.error(res.data.message);
         return;

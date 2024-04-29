@@ -26,17 +26,18 @@ import axios from "axios";
           googleAccessToken: accessToken,
         });
         if (!res.data.token) {
-          toast(res.data.message);
+          toast.error(res.data.message);
           return;
         }
         localStorage.setItem("skillUpToken", res.data.token);
-        toast(`User account has been created`);
+        toast.success(`Welcome to SkillUp`);
+        
         location.href = "/";
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
-          toast(error?.response?.data?.message);
+          console.log(error?.response?.data?.message);
         } else {
-          toast("An unexpected error occurred");
+          toast.error("An unexpected error occurred");
         }
       }
     };

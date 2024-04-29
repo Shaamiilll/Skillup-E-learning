@@ -65,7 +65,7 @@ function App() {
             </GoogleOAuthProvider>
           </BrowserRouter>
         </div>
-        <Toaster position="top-center" toastOptions={{ duration: 2000 }} />
+        <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
       </>
     ); 
 }
