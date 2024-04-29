@@ -49,6 +49,60 @@ class userUsecase {
 
   async createUser(body: any) {
     try {
+      if (body.googleAccessToken) {
+        const { googleAccessToken } = body;
+        const response = await axios.get(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${googleAccessToken}`,
+            },
+          }
+        );
+
+        const name = response.data.given_name;
+        const email = response.data.email;
+        const avatar = response.data.picture
+
+        const res = await this.userRepository.authenticateUser(email);
+
+        if (res.data) {
+          return {
+            status: HttpStatus.ServerError,
+            data: {
+              success: false,
+              message: "Account Exist already",
+            },
+          };
+        }
+
+        const result = await this.userRepository.createUser({
+          email,
+          name,
+          avatar,
+        });
+
+        if (!result.data) {
+          return {
+            status: HttpStatus.ServerError,
+            data: {
+              success: false,
+              message: result.message,
+            },
+          };
+        }
+
+        const token = jwt.sign(result.data, "itssecret");
+
+        return {
+          status: result.success ? HttpStatus.Success : HttpStatus.ServerError,
+          data: {
+            success: result.success,
+            message: result.message,
+            token: token,
+          },
+        };
+      }
       const { email, name, password, confirmPassword } = body;
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       const passwodRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
@@ -188,6 +242,46 @@ class userUsecase {
 
   async loginUser(body: any) {
     try {
+      if (body.googleAccessToken) {
+        const { googleAccessToken } = body;
+
+        const response = await axios.get(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${googleAccessToken}`,
+            },
+          }
+        );
+        const name = response.data.given_name;
+        const email = response.data.email;
+
+        const res = await this.userRepository.authenticateUser(email);
+
+        if (!res.data) {
+          return {
+            status: HttpStatus.ServerError,
+            data: {
+              success: false,
+              message: "User not found",
+            },
+          };
+        }
+        const token = jwt.sign(
+          { id: res.data._id, email: res.data.email, role: res.data.role },
+          "itssecret"
+        );
+
+        return {
+          status: res.success ? HttpStatus.Success : HttpStatus.ServerError,
+          data: {
+            success: res.success,
+            message: "User Authenticated",
+            token: token,
+            admin: res.data.role == UserRole.Admin,
+          },
+        };
+      }
       const { email, password } = body;
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
