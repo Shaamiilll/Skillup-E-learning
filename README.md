@@ -19,6 +19,7 @@ Currently Working on this Project
 - Clean Architecture: Design principle for scalable and maintainable applications.
 - Cloudinary web services : for storing the Images and Videos
 - Stripe : Online payment gateway
+- Auth0 : Google login and signup
 - webrtc(implimenting)
   
 ## Usage
