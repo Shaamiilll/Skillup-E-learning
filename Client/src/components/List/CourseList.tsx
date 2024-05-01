@@ -87,7 +87,7 @@ function CourseList() {
   const makepayment = async () => {
     if (token) {
       dispatch(getUser());
-      const stripePromise= loadStripe(
+      const stripePromise = loadStripe(
         "pk_test_51P8oGZSGNSmTI5FSaomiNowkmg63nBjv7grwEfa3PbpZdmpFhYQDVfG4lVXZxlZwoCk3NiBUe2mWVbxSudSU4b5i00JAOOcuCX"
       );
       const stripe = await stripePromise;
@@ -109,13 +109,13 @@ function CourseList() {
             <div className="md:flex items-center -mx-10">
               <div className="w-full md:w-1/2 px-10 mb-10 md:mb-0">
                 <div className="relative">
-                  <video
-                    className="rounded-xl"
-                    width="1000" // Increased width
-                    height="562.5" // Adjusted height to maintain aspect ratio (16:9)
-                    controls
-                    src={courseDetails.summaryVideo}
-                  ></video>
+                    <video
+                      className="rounded-xl"
+                      width="1000" 
+                      height="562.5" 
+                      controls
+                      src={courseDetails.summaryVideo}
+                    ></video>
                 </div>
               </div>
               <div className="w-full md:w-1/2 px-10">

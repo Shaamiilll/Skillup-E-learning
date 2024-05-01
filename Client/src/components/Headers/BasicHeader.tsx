@@ -17,8 +17,8 @@ function BasicHeader() {
     },
     {
       id: 3,
-      name: "Works",
-      path: "/skills",
+      name: "My Learnings",
+      path: "/mylearning",
     },
     {
       id: 4,

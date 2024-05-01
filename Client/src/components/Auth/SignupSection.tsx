@@ -1,11 +1,12 @@
   import React, { useState } from "react";
   import api from "../../axios/api";
   import toast from "react-hot-toast";
-  import { useNavigate } from "react-router-dom";
-  import Modal from "../common/Modal";
+import { useNavigate } from "react-router-dom";
+import Modal from "../common/Modal";
 import { FaGoogle } from "react-icons/fa";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+
 
   function SignupSection() {
     const navigate = useNavigate();
@@ -16,7 +17,14 @@ import axios from "axios";
     const [username, setUsername] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [otp, setOtp] = useState("");
-    const [token, setToken] = useState("");
+    const [token , setToken] = useState('')
+    
+  
+    const Btoken = localStorage.getItem('skillUpToken')
+    if(Btoken){
+      navigate('/')
+      toast.success('user Already logged in')
+    }
 
 
     const handleGoogleLoginSuccess = async (tokenResponse: any) => {
