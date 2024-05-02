@@ -1,15 +1,17 @@
 import React, { StrictMode, useEffect, useState } from "react";
-import ICourse from "../../../../Server/interfaces/course";
+// import ICourse from "../../../../Server/interfaces/course";
 import { AppDispatch } from "../../Redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { selectcourse } from "../../Redux/slice/courseSlice";
 import { getCourses } from "../../Redux/actions/courseAction";
 import { BiStrikethrough } from "react-icons/bi";
+import { IoMdStar, IoIosPlayCircle } from "react-icons/io";
 import api from "../../axios/api";
 import { selectUser } from "../../Redux/slice/authSlice";
 import { getUser } from "../../Redux/actions/authAction";
 import { loadStripe } from "@stripe/stripe-js";
+import toast from "react-hot-toast";
 
 interface ILesson {
   title: string;
@@ -35,6 +37,7 @@ interface ICourse {
   isBlock?: boolean;
   summaryVideo: string;
 }
+
 function CourseList() {
   const [courseDetails, setCourseDetails] = useState<ICourse>({
     _id: "",
@@ -60,6 +63,35 @@ function CourseList() {
   const id = searchParams.get("id");
   const course = useSelector(selectcourse).courses;
   const user = useSelector(selectUser).user;
+  const [review, setReview] = useState({
+    user: "",
+    rating: "",
+    feedback: "",
+  });
+
+  const submitReview = async () => {
+    if (token) {
+      try {
+        await api.patch("/course/review", {
+          user: review.user,
+          feedback: review.feedback,
+          rating: review.rating,
+          courseId: courseDetails._id,
+        });
+        toast("Review submitted, updated after a while.");
+      } catch (error) {
+        console.log(error);
+        
+      }
+    } else {
+      toast.error("Login to your account to review on course");
+    }
+    setReview({
+      user: "",
+      rating: "",
+      feedback: "",
+    });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -109,13 +141,13 @@ function CourseList() {
             <div className="md:flex items-center -mx-10">
               <div className="w-full md:w-1/2 px-10 mb-10 md:mb-0">
                 <div className="relative">
-                    <video
-                      className="rounded-xl"
-                      width="1000" 
-                      height="562.5" 
-                      controls
-                      src={courseDetails.summaryVideo}
-                    ></video>
+                  <video
+                    className="rounded-xl"
+                    width="1000"
+                    height="562.5"
+                    controls
+                    src={courseDetails.summaryVideo}
+                  ></video>
                 </div>
               </div>
               <div className="w-full md:w-1/2 px-10">
@@ -155,6 +187,77 @@ function CourseList() {
                   </div>
                 </div>
               </div>
+            </div>
+            <div className="my-3 flex justify-center ">
+              <div className="border lg:w-[50%] px-5 py-2 rounded-xl">
+                <p className="text-xl font-bold">
+                  What you will learn in this Course
+                </p>
+                <p className="font-semibold">
+                  Course By{" "}
+                  {(courseDetails.instructor as { name: string }).name}
+                </p>
+                <p className=" mt-2 px-5">
+                  {courseDetails.description.substring(0, 100)}...
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 border-2 px-6 rounded-xl py-2">
+              <p className="text-2xl font-medium">Course Content</p>
+              <div className="my-2 max-h-[50vh] overflow-y-auto overflow-x-hidden">
+                {courseDetails.lessons.map((lesson, index) => (
+                  <p className="border px-10 py-2 text-lg truncate">
+                    {`${index + 1}. `}
+                    {lesson.title.toUpperCase()}
+                  </p>
+                ))}
+              </div>
+            </div>
+            <div className="mt-5">
+              <div className="flex w-full border justify-between ">
+                <div className="flex w-full">
+                  <input
+                    type="text"
+                    name=""
+                    id=""
+                    value={review.feedback}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setReview({ ...review, feedback: e.target.value })
+                    }
+                    className="bg-transparent py-2 px-4 w-full outline-none"
+                    placeholder="Enter your feedback about this course.."
+                  />
+                  <div className="flex items-center px-2 gap-1">
+                    <p>
+                      <IoMdStar size={28} className="text-orange-500" />
+                    </p>
+                    <select
+                      name=""
+                      id=""
+                      value={review.rating}
+                      className="text-black px-4"
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                        setReview({ ...review, rating: e.target.value })
+                      }
+                    >
+                      <option value="1">1 </option>
+                      <option value="2">2 </option>
+                      <option value="3">3 </option>
+                      <option value="4">4 </option>
+                      <option value="5">5 </option>
+                    </select>
+                  </div>
+                </div>
+                <button
+                  onClick={submitReview}
+                  className="bg-purple-700 px-4 hover:bg-purple-700/80"
+                >
+                  Review
+                </button>
+              </div>
+              <p className="text-gray-300 text-xs">
+                Update your review about this course
+              </p>
             </div>
           </div>
         </div>
