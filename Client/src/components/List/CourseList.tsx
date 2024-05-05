@@ -1,12 +1,12 @@
-import React, { StrictMode, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 // import ICourse from "../../../../Server/interfaces/course";
 import { AppDispatch } from "../../Redux/store";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
-import { selectcourse } from "../../Redux/slice/courseSlice";
-import { getCourses } from "../../Redux/actions/courseAction";
-import { BiStrikethrough } from "react-icons/bi";
-import { IoMdStar, IoIosPlayCircle } from "react-icons/io";
+import { useLocation } from "react-router-dom";
+// import { selectcourse } from "../../Redux/slice/courseSlice";
+// import { getCourses } from "../../Redux/actions/courseAction";
+// import { BiStrikethrough } from "react-icons/bi";
+import { IoMdStar } from "react-icons/io";
 import api from "../../axios/api";
 import { selectUser } from "../../Redux/slice/authSlice";
 import { getUser } from "../../Redux/actions/authAction";
@@ -17,6 +17,11 @@ interface ILesson {
   title: string;
   content: string;
   duration: number | string;
+}
+interface IReviews {
+  user: { name: string; _id: string };
+  rating: number;
+  feedback: string;
 }
 
 interface ICourse {
@@ -36,6 +41,7 @@ interface ICourse {
   isApproved?: boolean;
   isBlock?: boolean;
   summaryVideo: string;
+  reviews: IReviews[];
 }
 
 function CourseList() {
@@ -49,6 +55,7 @@ function CourseList() {
     cover: "",
     lessons: [],
     instructor: "",
+    reviews: [],
     thumbnail: "",
     price: 0,
     offer: 0,
@@ -57,23 +64,25 @@ function CourseList() {
 
   const token = localStorage.getItem("skillUpToken");
   const dispatch: AppDispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
-  const course = useSelector(selectcourse).courses;
+  // const course = useSelector(selectcourse).courses;
   const user = useSelector(selectUser).user;
   const [review, setReview] = useState({
-    user: "",
-    rating: "",
+    user: user?._id,
+    rating: "1",
     feedback: "",
   });
 
   const submitReview = async () => {
     if (token) {
       try {
+        console.log(review);
+
         await api.patch("/course/review", {
-          user: review.user,
+          user: user?._id,
           feedback: review.feedback,
           rating: review.rating,
           courseId: courseDetails._id,
@@ -81,7 +90,6 @@ function CourseList() {
         toast("Review submitted, updated after a while.");
       } catch (error) {
         console.log(error);
-        
       }
     } else {
       toast.error("Login to your account to review on course");
@@ -106,6 +114,8 @@ function CourseList() {
             (course: any) => course._id === id
           );
           if (selected) {
+            console.log(selected);
+            
             setCourseDetails(selected);
           }
         }
@@ -122,7 +132,7 @@ function CourseList() {
       const stripePromise = loadStripe(
         "pk_test_51P8oGZSGNSmTI5FSaomiNowkmg63nBjv7grwEfa3PbpZdmpFhYQDVfG4lVXZxlZwoCk3NiBUe2mWVbxSudSU4b5i00JAOOcuCX"
       );
-      const stripe = await stripePromise;
+      await stripePromise;
       const response = await api.post("/order/checkout-session", {
         course: courseDetails,
         userId: user?._id,
@@ -258,6 +268,59 @@ function CourseList() {
               <p className="text-gray-300 text-xs">
                 Update your review about this course
               </p>
+            </div>
+            <div className="px-3 py-2">
+              <p className="text-xl font-medium">Reviews</p>
+              <div className="flex h-[18vh] mt-2 w-full overflow-x-auto gap-2">
+                {courseDetails.reviews?.map((review) => (
+                  <div className="bg-purple-900/30 rounded-2xl px-5 py-2 w-[15rem]">
+                    <div className="flex justify-between">
+                      <p className="font-semibold">
+                        By{" "}
+                        {typeof review.user == "object"
+                          ? review.user?.name
+                          : review.user}
+                      </p>
+                      <div className="flex items-center text-orange-500">
+                        {review.rating == 1 ? (
+                          <IoMdStar size={18} />
+                        ) : review.rating == 2 ? (
+                          <>
+                            <IoMdStar size={18} />
+                            <IoMdStar size={18} />
+                          </>
+                        ) : review.rating == 3 ? (
+                          <>
+                            <IoMdStar size={18} />
+                            <IoMdStar size={18} />
+                            <IoMdStar size={18} />
+                          </>
+                        ) : review.rating == 4 ? (
+                          <>
+                            <IoMdStar size={18} />
+                            <IoMdStar size={18} />
+                            <IoMdStar size={18} />
+                            <IoMdStar size={18} />
+                          </>
+                        ) : review.rating == 5 ? (
+                          <>
+                            <IoMdStar size={18} />
+                            <IoMdStar size={18} />
+                            <IoMdStar size={18} />
+                            <IoMdStar size={18} />
+                            <IoMdStar size={18} />
+                          </>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-gray-300 text-xs md:text-sm lg:text-md">
+                      {review.feedback}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

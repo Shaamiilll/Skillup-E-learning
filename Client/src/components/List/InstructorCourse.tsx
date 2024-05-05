@@ -6,8 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectcourse } from "../../Redux/slice/courseSlice";
 import { AppDispatch } from "../../Redux/store";
 import { getCourses } from "../../Redux/actions/courseAction";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+// import { selectUser } from "../../Redux/slice/authSlice";
 
 interface CourseData {
   title: string;
@@ -19,6 +20,13 @@ interface CourseData {
   thumbnail: File | null;
   summaryVideo: File | null;
   lessons: Lesson[];
+  instructor: {_id: string}
+  reviews?: IReviews[];
+}
+interface IReviews {
+  user: { name: string; _id: string };
+  rating: number;
+  feedback: string;
 }
 
 interface Lesson {
@@ -28,12 +36,31 @@ interface Lesson {
 }
 
 function InstructorCourse() {
-  const Navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
-  const courses = useSelector(selectcourse).courses;
+  const instructorCourses = useSelector(selectcourse).courses;
+
+  const [user, setUser] = useState<{ _id: string } | null>(null);
+
+  const courses = instructorCourses.filter((course) => {
+    return course?.instructor?._id === user?._id;
+  });
   useEffect(() => {
-    dispatch(getCourses({ search: "", isInstructor: false }));
+    const fetchData = async () => {
+      try {
+        const userResponse = await api.get("/user/find");
+        const userData = userResponse.data; // Assuming user data is in response.data
+        setUser(userData.user);
+        dispatch(getCourses({ search: "", isInstructor: false }));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        // Handle errors here
+      }
+    };
+
+    // Immediately invoke the fetchData function
+    fetchData();
   }, [dispatch]);
+
   const [newCourse, setNewCourse] = useState<boolean>(false);
   const [courseData, setCourseData] = useState<CourseData>({
     title: "",
@@ -45,11 +72,13 @@ function InstructorCourse() {
     thumbnail: null,
     summaryVideo: null,
     lessons: [],
+    instructor: ""
+
   });
 
   // Function to handle adding a new lesson
   const addLesson = (e: any) => {
-    e.preventDefault()
+    e.preventDefault();
     setCourseData({
       ...courseData,
       lessons: [
@@ -86,7 +115,7 @@ function InstructorCourse() {
     if (files && files.length > 0) {
       const file = files[0];
       const secureUrl = await uploadFile(file);
-      
+
       if (secureUrl) {
         console.log(secureUrl);
 
@@ -135,22 +164,21 @@ function InstructorCourse() {
     setCourseData({ ...courseData, lessons });
   };
 
-  const handleLessonVideoChange = async(
+  const handleLessonVideoChange = async (
     e: ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-
     const lessons = [...courseData.lessons];
     const file = e.target.files && e.target.files[0];
     const secureUrl = await uploadFile(file);
     console.log(secureUrl);
-    
-    lessons[index] = { ...lessons[index], video:secureUrl  };
-    
+
+    lessons[index] = { ...lessons[index], video: secureUrl };
+
     setCourseData({ ...courseData, lessons });
   };
 
-  const [courseSections, setCourseSections] = useState<number[]>([1]); 
+  // const [courseSections, setCourseSections] = useState<number[]>([1]);
 
   const uploadFile = async (file: File | null) => {
     const data = new FormData();
@@ -158,11 +186,10 @@ function InstructorCourse() {
       data.append("file", file);
     }
     console.log(file?.type);
-   
 
     if (file?.type == "video/mp4") {
       console.log("video");
-      
+
       data.append("upload_preset", "Video_preset");
       data.append("cloud_name", "db2kn0rhf");
 
@@ -175,9 +202,9 @@ function InstructorCourse() {
           withCredentials: false,
         });
         console.log(res);
-        
+
         console.log("hy");
-        
+
         const { secure_url } = res.data;
         return secure_url;
       } catch (error) {
@@ -186,7 +213,7 @@ function InstructorCourse() {
       }
     } else {
       console.log("image");
-      
+
       data.append("upload_preset", "images_preset");
       data.append("cloud_name", "db2kn0rhf");
 
@@ -241,22 +268,20 @@ function InstructorCourse() {
 
       const response = await api.post("/course/create", courseData);
       if (response.data.success) {
-        
         toast.success("Uploaded file");
-        setNewCourse(false)
-
-      }else{
-        toast.error(response.data.message)
+        setNewCourse(false);
+      } else {
+        toast.error(response.data.message);
       }
     } catch (error) {
       console.error("Error adding course:", error);
     }
   };
 
-  const addMoreCourse = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    setCourseSections([...courseSections, courseSections.length + 1]);
-  };
+  // const addMoreCourse = (event: React.MouseEvent<HTMLButtonElement>) => {
+  //   event.preventDefault();
+  //   setCourseSections([...courseSections, courseSections.length + 1]);
+  // };
 
   return (
     <>
