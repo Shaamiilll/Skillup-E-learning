@@ -434,7 +434,7 @@ class userUsecase {
       const { email, otp } = body;
       const isValid = await this.otpRepository.checkOtp({ email, otp });
       const response = await this.userRepository.authenticateUser(email);
-      console.log(response.data?._id);
+      
 
       const token = jwt.sign(
         {

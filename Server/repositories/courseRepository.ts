@@ -1,6 +1,6 @@
 import Courses from "../models/courseModel";
 import ICourse from "../interfaces/course";
-
+import IReviews from "../interfaces/reviews";
 
 class courseRepository {
   async createCourse(details: ICourse) {
@@ -29,16 +29,15 @@ class courseRepository {
   async getCourses(regex: string) {
     try {
       const courses = regex
-        ? await Courses.find({ title: { $regex: regex, $options: "i" } })
-        : // .populate("instructor", "name")
+        ? await Courses.find({ title: { $regex: regex, $options: "i" } }).populate("reviews.user", "name")
+        : 
           // .populate("category", "name")
-          // .populate("reviews.user", "name")
+          
           // .sort({ _id: -1 })
-          await Courses.find();
-      // .populate("instructor", "name")
-      // .populate("category", "name")
-      // .populate("reviews.user", "name")
-      // .sort({ _id: -1 });
+          await Courses.find()
+      .populate("instructor", "name")
+      .populate("reviews.user", "name")
+      .sort({ _id: -1 });
       return {
         success: true,
         message: "Fetch all caetgories",
@@ -82,6 +81,34 @@ class courseRepository {
         success: true,
         message: "Fetch course data",
         course,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: `Failed to fetch ${error}`,
+      };
+    }
+  }
+
+  async updateReviews(id: string, updates: IReviews) {
+    try {
+      const updated = await Courses.updateOne(
+        { _id: id },
+        { $addToSet: { reviews: updates } },
+        {
+          new: true,
+        }
+      );
+      
+      if (!updated) {
+        return {
+          success: false,
+          message: "Unable to update right now",
+        };
+      }
+      return {
+        success: true,
+        message: "Updated the Review",
       };
     } catch (error) {
       return {

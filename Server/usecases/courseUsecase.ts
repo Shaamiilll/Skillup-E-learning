@@ -6,7 +6,6 @@ import courseRepository from "../repositories/courseRepository";
 import dotenv from "dotenv";
 dotenv.config();
 
-
 class courseUsecase {
   private decodeToken(token: string): MyJWTPayLoad {
     return jwt.verify(token, "itssecret") as MyJWTPayLoad;
@@ -27,8 +26,6 @@ class courseUsecase {
 
   async createCourse(fields: ICourse, token: string) {
     try {
-      
-      
       const user = this.decodeToken(token);
       fields = { ...fields, instructor: user.id };
       const res = await this.courseRepository.createCourse(fields);
@@ -87,6 +84,33 @@ class courseUsecase {
       let { _id } = data;
 
       const res = await this.courseRepository.updateCourse(_id as string, data);
+      return {
+        status: res.success ? 200 : 500,
+        data: {
+          success: res.success,
+          message: res.message,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 500,
+        data: {
+          success: false,
+          message: "server error",
+        },
+      };
+    }
+  }
+
+  async updateReviews(data: any) {
+    try {
+      let { courseId, user, feedback, rating } = data;
+
+      const res = await this.courseRepository.updateReviews(courseId, {
+        user,
+        feedback,
+        rating,
+      });
       return {
         status: res.success ? 200 : 500,
         data: {

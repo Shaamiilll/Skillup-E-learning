@@ -53,7 +53,20 @@ const CourseSchema = new mongoose.Schema<ICourse>({
   },
   summaryVideo:{
     type:String,
-  }
+  },
+  enrollers: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+  reviews: [
+    {
+      user: { type: mongoose.Types.ObjectId, ref: "User" },
+      rating: Number,
+      feedback: String,
+    },
+  ],
 });
 
 const CourseModel = mongoose.model("Course", CourseSchema);

@@ -9,7 +9,7 @@ class OrderController {
 
   async createOrder(req: Request, res: Response) {
     try {
-      console.log("ordr");
+      
       
         const Response = await this.orderUsecase.createOrder(req.body)
         res.status(Response.status).send(Response.data);

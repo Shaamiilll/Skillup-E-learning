@@ -45,4 +45,11 @@ Router.patch(
   (req: Request, res: Response) => courseController.updateCourse(req, res)
 );
 
+Router.patch(
+  "/review",
+  (req: Request, res: Response, next: NextFunction) =>
+    authMiddleware.authUser(req, res, next),
+  (req: Request, res: Response) => courseController.updateReviews(req, res)
+);
+
 export default Router;

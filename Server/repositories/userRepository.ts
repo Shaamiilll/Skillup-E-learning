@@ -143,7 +143,6 @@ class UserRepository {
         .populate("learnings.course")
         .exec();
 
-        console.log(userLearnings);
         
       return {
         success: true,
